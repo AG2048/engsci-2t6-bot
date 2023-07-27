@@ -17,8 +17,20 @@ Currently we plan to include the following features into our discord bot, more f
     - One reaction should accomodate multiple reaction role settings.
     - The reaction role should be easy to set up without needing to change the code (we can use slash commands)
 2. Message Archiving:
-    - The bot should maintain several different .txt files and directories for each channel each day.
-    - Every message sent to the server will be documented in the corresponding .txt file for the channel for that day, not including files (recording the file link is a valid option).
+    - The bot should maintain several different .txt / .csv files and directories for each channel each day.
+    - Every message sent to the server will be documented in the corresponding .txt / .csv file for the channel for that day, not including files (recording the file link is a valid option).
     - The documentation should at minimum include the sender's username, id, datetime, message's text content, message's id, channel id, if it is replying to other messages, link to all attached files.
     - Every time it runs, it should also backtrack all the unrecorded message since the last time.
-    - If messages are removed / deleted, also log the message as a separate "delete" entry.
+    - If messages are removed / deleted, also log the message as a separate "delete" entry. Similar things should be done to editing messages. Record the original message id, channel id, datetime, sender name, sender id so it is possible to backtrack.
+3. Resource Fetching:
+    - When a user uses a specific command, the bot will send (privately by default, can be overwritten) a link to the resources of a specific course in the same channel.
+    - This requires a function that allows users to add resources to the database of the bot. The bot records the name of resource provider, resource's name, resource's link, resource's course channel id. Then modify a specific "main" embed message in the corresponding channel.
+    - When the user requests the resource, the bot will privately send a `ephemeral=True` copy of the embed to the user, or send a link to the "main embed"
+4. Resource Channel Organization:
+    - Using embed messages, organize the links in the resources channel into hyperlinks.
+    - One embed message will correspond to one "resource category"
+    - When new resources are to be added or removed, the admins should be able to add or remove the resource via a slash command.
+5. Assignment Reminders:
+    - In a specified channel, the bot will ping everyone with "assignment reminders" role at specified times before the assignment is due (such as 2 weeks, 1 week, 48 hours, 24 hours, 6 hours)
+    - The admins should be able to add or remove new assignments to this via slash command.
+    - The reminder should not trigger if the assignment is already past a reminder threshold time at the moment it is added.
