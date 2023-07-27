@@ -64,3 +64,6 @@ Currently we plan to include the following features into our discord bot, more f
 3. Somehow make a music bot feature:
     - Siilar to the Groovy bot, search on youtube, parse the video audio, and play the audio in ONE channel
     - Commands includes: join, leave, queue, dequeue, view queue, skip. The bot only go to the first "join" voice channel if the user is in a voice channel. It disconnects when it's not playing music for 5 minutes.
+
+# Cogs
+Will add how to use Cogs here
