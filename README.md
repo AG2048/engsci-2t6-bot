@@ -11,7 +11,7 @@ This repository houses the development of an upcoming Discord bot for the UofT E
 # Contributing
 The `main.py` file, which defines the main bot, is the only file that will be running on the server.
 
-To streamline collaboration, we utilize [Cogs](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html) within `discord.py` to modularize the codebase. If you're looking to make changes to certain functions or add new ones, please do so in the relevant python file for the corresponding Cog. There may be occasions when creating new Cog files is appropriate, especially when introducing entirely new features.
+To streamline collaboration, we utilize Cogs ([Cogs Documentation](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)) within `discord.py` to modularize the codebase. If you're looking to make changes to certain functions or add new ones, please do so in the relevant python file for the corresponding Cog. There may be occasions when creating new Cog files is appropriate, especially when introducing entirely new features.
 
 For some examples of how to use Cogs, check the [Cogs](#cogs) section or see existing code.
 
