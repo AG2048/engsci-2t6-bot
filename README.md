@@ -1,6 +1,13 @@
 # engsci-2t6-bot
 This repository houses the development of an upcoming Discord bot for the UofT EngSci 2T6 server.
 
+# Table of Contents
+- [Contributing](#contributing)
+- [Functionalities](#functionalities)
+  - [Utility Functions](#utility-functions)
+  - ["Fun" Functions](#fun-functions)
+- [Cogs](#cogs)
+
 # Contributing
 The `main.py` file, which defines the main bot, is the only file that will be running on the server.
 
