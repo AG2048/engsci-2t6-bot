@@ -34,3 +34,7 @@ Currently we plan to include the following features into our discord bot, more f
     - In a specified channel, the bot will ping everyone with "assignment reminders" role at specified times before the assignment is due (such as 2 weeks, 1 week, 48 hours, 24 hours, 6 hours)
     - The admins should be able to add or remove new assignments to this via slash command.
     - The reminder should not trigger if the assignment is already past a reminder threshold time at the moment it is added.
+6. Automatically add a restriction role to any user that is obviously a scammer or advertiser.
+    - The main criterion for this is if the user sends a long message within 5 minutes of joining the server, including links or emojis.
+    - The bot should also record any person who has been applied the restriction role to prevent them from leaving and joining the server to clear their roles.
+    - The bot should make a copy of the suspected scammer's message and post them in the reasons-of-ban-history channel.
