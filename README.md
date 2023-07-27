@@ -13,6 +13,8 @@ The `main.py` file, which defines the main bot, is the only file that will be ru
 
 To streamline collaboration, we utilize [Cogs](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html) within `discord.py` to modularize the codebase. If you're looking to make changes to certain functions or add new ones, please do so in the relevant python file for the corresponding Cog. There may be occasions when creating new Cog files is appropriate, especially when introducing entirely new features.
 
+For some examples of how to use Cogs, check the [Cogs](#cogs) section or see existing code.
+
 # Functionalities
 We plan to incorporate the following features into our Discord bot. Additional functionalities may be added as we see fit (or as you suggest!).
 
