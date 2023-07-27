@@ -1,69 +1,79 @@
 # engsci-2t6-bot
-The soon-to-be discord bot to be used in the UofT EngSci 2T6 discord server
+This repository houses the development of an upcoming Discord bot for the UofT EngSci 2T6 server.
 
 # Contributing
-The only file the server will be running is the `main.py` file, which defines the main bot.
+The `main.py` file, which defines the main bot, is the only file that will be running on the server.
 
-For easier collaboration effort, we would be using [Cogs](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html) for `discord.py` to modularize the programming process. Whenever you wish to make changes to specific functions or add new functions, make the edits in the corresponding python file for the specific Cog. At times, it may be appropriate to add new Cog files to implement completely new features.
+To streamline collaboration, we utilize [Cogs](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html) within `discord.py` to modularize the codebase. If you're looking to make changes to certain functions or add new ones, please do so in the relevant python file for the corresponding Cog. There may be occasions when creating new Cog files is appropriate, especially when introducing entirely new features.
 
 # Functionalities
-Currently we plan to include the following features into our discord bot, more functionalities can be added if we feel like it (or if YOU feel like it!):
+We plan to incorporate the following features into our Discord bot. Additional functionalities may be added as we see fit (or as you suggest!).
 
 ## Utility Functions:
-1. Reaction Roles:
-    - The bot will give / remove a discord role to the member that reacted / unreacted to a specific reaction under a specific message.
-    - The reaction emoji should be accessible by the bot (default system emoji or server emoji).
-    - There can be multiple reaction role modes, such as: only adding roles, only removing roles, toggle (when user reacts, give role if user doesn't have the role, remove role if user does have the role, then remove the user's reaction).
-    - One reaction should accomodate multiple reaction role settings.
-    - The reaction role should be easy to set up without needing to change the code (we can use slash commands)
-2. Message Archiving and Logging:
-    - The bot should maintain several different .txt / .csv files and directories for each channel each day.
-    - Every message sent to the server will be documented in the corresponding .txt / .csv file for the channel for that day, not including files (recording the file link is a valid option).
-    - The documentation should at minimum include the sender's username, id, datetime, message's text content, message's id, channel id, if it is replying to other messages, link to all attached files.
-    - Every time it runs, it should also backtrack all the unrecorded message since the last time.
-    - If messages are removed / deleted, also log the message as a separate "delete" entry. Similar things should be done to editing messages. Record the original message id, channel id, datetime, sender name, sender id so it is possible to backtrack.
-    - This function should also track the number of words and the number of characters being sent in each channel by each person every day. This should be done in parallel to message archiving.
-3. Resource Fetching:
-    - When a user uses a specific command, the bot will send (privately by default, can be overwritten) a link to the resources of a specific course in the same channel.
-    - This requires a function that allows users to add resources to the database of the bot. The bot records the name of resource provider, resource's name, resource's link, resource's course channel id. Then modify a specific "main" embed message in the corresponding channel. (The main embed is also pinned)
-    - When the user requests the resource, the bot will privately send a `ephemeral=True` copy of the embed to the user, or send a link to the "main embed"
-    - By default, if the user did not specify channel, the channel they sent the message is linked to the course (unless the channel is not one of the course channels)
-4. Resource Channel Organization:
-    - Using embed messages, organize the links in the resources channel into hyperlinks.
-    - One embed message will correspond to one "resource category"
-    - When new resources are to be added or removed, the admins should be able to add or remove the resource via a slash command.
-5. Assignment Reminders:
-    - In a specified channel, the bot will ping everyone with "assignment reminders" role at specified times before the assignment is due (such as 2 weeks, 1 week, 48 hours, 24 hours, 6 hours)
-    - The admins should be able to add or remove new assignments to this via slash command.
-    - The reminder should not trigger if the assignment is already past a reminder threshold time at the moment it is added.
-6. Automatically add a restriction role to any user that is obviously a scammer or advertiser:
-    - The main criterion for this is if the user sends a long message within 5 minutes of joining the server, including links or emojis.
-    - The bot should also record any person who has been applied the restriction role to prevent them from leaving and joining the server to clear their roles.
-    - The bot should make a copy of the suspected scammer's message and post them in the reasons-of-ban-history channel.
-7. Anonymous Polling:
-    - Allow admins to create polls with a set end date with options, voting mode (single vote or multiple vote), ping people or not, and what roles they must have to participate in the poll. Also list of reminders times (by default it's only 24 hours before poll closes).
-    - The bot should also make an announcement about any upcoming poll and remind people 24 hours before it closes, (also pings the roles depends on the settings).
-    - Either in a "polling channel", or as a slash command, the users can respond to the poll.
-    - The bot records the votes, and who voted, but does not link the two piece of information together. (List of voters are separate from list of voted) Only one time vote allowed for each user (no changing votes later).
-    - The bot announces the result of the poll. (ping or not depends on the settings of the specific poll)
-8. Monitor and Display Server Statistics:
-    - Number of people with every single role, display as not-joinable VC
-    - Return on request (slash command) server's message history situation, with graphs including the top "n" message sender / channels depending on the user's input (default is 10)
-9. Make it easier to add emojis to the server:
-    - Make it such that everyone can simply use a slash command to send any other server's emoji or any png/gif and add it to the server.
-    - Also make it easier to remove emotes.
-    - Add a rate-limit to how many emotes everyone can add.
-10. Log all the bot's activities to a specific log channel:
-    - probably in embed format as well, this includes ALL updates, even when on_ready or reaction roles.
-    - Includes: datetime, action-detail, initiated by, result, error
+1. **Reaction Roles**: 
+    - The bot will assign/remove a role based on a member's reaction to a specific message.
+    - The reaction emoji should be accessible by the bot (either a default system emoji or a server emoji).
+    - The reaction roles could operate in various modes such as: role addition only, role removal only, or toggle mode (giving/removing roles based on the user's current roles).
+    - One reaction can correspond to multiple reaction role settings.
+    - Reaction roles should be easy to configure without requiring code modifications, for which we can utilize slash commands.
+
+2. **Message Archiving and Logging**: 
+    - The bot will manage various .txt/.csv files and directories for each channel daily.
+    - Every message sent to the server will be documented in the corresponding .txt/.csv file for that day's channel, excluding files (though file links can be recorded).
+    - The documentation should include, at minimum, the sender's username, ID, datetime, message text, message ID, channel ID, any reply details, and links to all attached files.
+    - Upon launch, the bot should backtrack all unrecorded messages since its last active session.
+    - Any deleted/removed messages should be logged as a separate "delete" entry, similar to message edits. This should include original message details for backtracking purposes.
+    - This function should also track and record the word and character count per person per day for each channel, running in parallel with the message archiving process.
+
+3. **Resource Fetching**:
+    - When a user triggers a specific command, the bot will send a link to the resources for a specific course in the same channel (by default, sent privately; this can be overridden).
+    - The bot will require a function allowing users to add resources to the database. The bot will then record the resource provider's name, resource name, resource link, and the associated course's channel ID, subsequently modifying a main embed message in the corresponding channel (which will also be pinned).
+    - If the user does not specify a channel, the bot will associate the resource with the channel from which the request originated, provided it's a course-related channel.
+
+4. **Resource Channel Organization**:
+    - The bot will use embed messages to organize resource links in the resource channel.
+    - Each embed message will correspond to a resource category.
+    - Admins should be able to add or remove resources via a slash command.
+
+5. **Assignment Reminders**:
+    - The bot will ping all members with an "assignment reminders" role at predetermined times before an assignment is due (e.g., two weeks, one week, 48 hours, 24 hours, 6 hours).
+    - Admins should be able to add or remove assignments using a slash command.
+    - The reminder should not trigger if the assignment is already past its reminder threshold when it's added.
+
+6. **Scam Detection and Role Restriction**:
+    - The bot should automatically assign a restriction role to any user deemed likely to be a scammer or advertiser, based primarily on the user sending a long message, including links or emojis, within five minutes of joining the server.
+    - The bot should keep a record of all users to whom it has applied the restriction role to prevent them from evading the role by leaving and rejoining the server.
+    - The bot should also make a copy of any suspected scam messages and post them in a dedicated channel for recording ban reasons.
+
+7. **Anonymous Polling**:
+    - The bot should allow admins to create polls with set end dates, voting modes (single or multiple vote), the option to ping participants or not, role requirements for participation, and a list of reminder times (defaulting to 24 hours before the poll closes).
+    - The bot should announce any upcoming polls and remind participants 24 hours before the poll closes.
+    - Users can vote in a "polling" channel or via a slash command.
+    - The bot records votes and voter identities separately, ensuring anonymous voting.
+    - The bot announces the results of the poll upon its closure.
+
+8. **Server Statistics Display**:
+    - The bot should display the number of people associated with each role and present this data as a voice channel that can't be joined.
+    - On request (via a slash command), the bot should return an overview of the server's messaging history, including graphs of the top "n" message senders/channels as specified by the user (default is 10).
+
+9. **Emoji Management**:
+    - The bot should allow everyone to add emojis from other servers or any png/gif files to the server using a slash command.
+    - The bot should simplify the removal of emojis and impose a rate limit on emoji additions by users.
+
+10. **Activity Logging**:
+    - The bot should log all its activities in a dedicated channel, preferably using an embed format. This should include all updates, including on_ready or reaction roles.
+    - The log should include: datetime, action details, initiator, result, and any errors.
 
 ## "Fun" Functions:
-1. The bot can play gomoku?
-2. The bot can facilitate a "counting" game:
-    - All users sends numbers in a specific channel. The same person cannot send two consecutive numbers, and the numbers must be strictly increasing by one for every message. The bot reacts to every correct counting attempt, and announces that it resets the count every time someone messes up.
-3. Somehow make a music bot feature:
-    - Siilar to the Groovy bot, search on youtube, parse the video audio, and play the audio in ONE channel
-    - Commands includes: join, leave, queue, dequeue, view queue, skip. The bot only go to the first "join" voice channel if the user is in a voice channel. It disconnects when it's not playing music for 5 minutes.
+1. **Gomoku**: 
+    - How about the bot playing Gomoku?
+
+2. **Counting Game**: 
+    - The bot can facilitate a game where users count upwards in a specific channel. The rules include: no one user can post two consecutive numbers, and each message must increment the previous number by one. The bot reacts to every correct count and announces a reset when someone breaks the chain.
+
+3. **Music Bot Feature**: 
+    - Similar to the Groovy bot, the bot should search YouTube, parse video audio, and play the audio in a specific channel.
+    - Commands include: join, leave, queue, dequeue, view queue, skip. The bot joins the first "join" voice channel if the user is in a voice channel and disconnects if it's not playing music for 5 minutes.
 
 # Cogs
-Will add how to use Cogs here
+A guide on how to use Cogs will be added here soon.
