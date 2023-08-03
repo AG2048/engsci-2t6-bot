@@ -3,6 +3,7 @@ This repository houses the development of an upcoming Discord bot for the UofT E
 
 # Table of Contents
 - [Contributing](#contributing)
+- [Project Structure](#project-structure)
 - [Functionalities](#functionalities)
   - [Utility Functions](#utility-functions)
   - ["Fun" Functions](#fun-functions)
@@ -14,6 +15,61 @@ The `main.py` file, which defines the main bot, is the only file that will be ru
 To streamline collaboration, we utilize Cogs ([Cogs Documentation](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html)) within `discord.py` to modularize the codebase. If you're looking to make changes to certain functions or add new ones, please do so in the relevant python file for the corresponding Cog. There may be occasions when creating new Cog files is appropriate, especially when introducing entirely new features.
 
 For some examples of how to use Cogs, check the [Cogs](#cogs) section or see existing code.
+
+We will primarily be using the app_commands, which is the slash command feature of Discord.
+
+For an example of app_commands, check out cogs/utility/testing.py.
+
+# Project Structure
+```
+engsci-2t6-bot
+├── main.py
+├── cogs
+│   ├── entertainment
+│   ├── logging
+│   ├── moderation
+│   ├── resources
+│   └── utility
+│       └── testing.py
+├── data
+│   ├── entertainment
+│   │   ├── counting_state.csv
+│   │   └── gomoku_state.csv
+│   ├── logging
+│   │   ├── bot_log.txt
+│   │   ├── message_stats
+│   │   │   ├── users_<date>.csv
+│   │   │   └── channels_<date>.csv
+│   │   └── <channel_id>
+│   │       └── messages_<date>.csv
+│   ├── moderation
+│   │   ├── server_rules.csv
+│   │   └── left_users_roles.csv
+│   ├── resources
+│   │   ├── course_resources
+│   │   │   └── <course_channel_id>.csv
+│   │   └── general_resources
+│   │       └── <general_resource_category_name>.csv
+│   └── utility_information
+│       ├── assignment_reminders.csv
+│       ├── polls
+│       │   └── <poll_name>.csv
+│       ├── reaction_roles_current_state.csv
+│       └── reaction_roles_info.csv
+├── .gitignore
+├── .env
+├── README.md
+└── requirements.txt
+```
+`main.py` is the main file that will be running on the server. It imports all the Cogs and runs the bot.
+`cogs` is the directory that houses the Cog category (directory), each containing the Cog files (python files).
+`data` is the directory that houses all the data files that the bot will be using. This includes the bot's log, message stats, resource links, etc.
+`requirements.txt` is the file that contains all the dependencies that the bot will need to run. This file is used by the `pip` package manager to install all the dependencies.
+
+TODO: explain each file's purpose and structure
+
+
+
 
 # Functionalities
 We plan to incorporate the following features into our Discord bot. Additional functionalities may be added as we see fit (or as you suggest!).
