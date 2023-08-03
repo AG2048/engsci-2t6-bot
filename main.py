@@ -7,7 +7,7 @@ load_dotenv()
 APPLICATION_ID = int(os.getenv('APPLICATION_ID'))
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
-ENGSCI_2T6_SERVER_ID = int(os.getenv('ENGSCI_2T6_SERVER_ID'))
+SERVER_ID = int(os.getenv('SERVER_ID'))
 
 
 class Bot(commands.Bot):
@@ -28,7 +28,7 @@ class Bot(commands.Bot):
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 await self.load_extension(f'cogs.{filename[:-3]}')
-        await bot.tree.sync(guild=discord.Object(id=ENGSCI_2T6_SERVER_ID))
+        await bot.tree.sync(guild=discord.Object(id=SERVER_ID))
 
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
