@@ -68,7 +68,19 @@ engsci-2t6-bot
 
 TODO: explain each file's purpose and structure
 
-
+# .env File
+The `.env` file is a file that contains all the environment variables that the bot will need to run. This includes the bot's token, the server's ID, etc. This file is not included in the repository for security reasons. If you need to run the bot locally, you will need to create this file yourself. The file should be in the same directory as `main.py`.
+The content of this file should be as follows:
+- APPLICATION_ID=<APPLICATION_ID>
+  - The Application ID specific to the bot. This can be found in the Discord Developer Portal. 
+- DISCORD_BOT_TOKEN=<TOKEN>
+  - The bot's token. This can be found in the Discord Developer Portal.
+- SERVER_ID=<SERVER/GUILD ID>
+  - The server's ID. This can be found by right-clicking on the server icon and selecting "Copy Server ID".
+- ADMINISTRATION_ROLES_IDS=<ADMIN_ROLE_ID_1>,<ADMIN_ROLE_ID_2>,...
+  - The IDs of the roles that have administrative privileges. This can be found by right-clicking on the role and selecting "Copy Role ID". 
+- COMMAND_PREFIX=<COMMAND_PREFIX>
+  - The prefix that the bot will use to identify commands. This can be any string of characters.
 
 
 # Functionalities
