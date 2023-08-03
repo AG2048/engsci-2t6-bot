@@ -17,6 +17,19 @@ class ReactionRolesCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message) -> None:
+        if message.author == self.bot.user:
+            return
+        if message.content == 'testing_ping':
+            await message.channel.send('testing_pong')
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
+        if payload.member == self.bot.user:
+            return
+        print(payload.emoji.name)
+
     @app_commands.command(
         name='app_command_name',
         description='app_command_description')
@@ -48,16 +61,16 @@ class ReactionRolesCog(commands.Cog):
         await interaction.response.send_message(
             f"Value string: {value_string}\nValue int: {value_int}\nValue role: {value_role}\nValue user: {value_user}\nValue channel: {value_channel}\nValue string options: {value_string_options}\nOptional input: {optional_input}")
         # To send multiple messages:
-            # await interaction.followup.defer()
-            # await interaction.followup.send("Message 1")
-            # await interaction.followup.send("Message 2")
+        #    await interaction.followup.defer()
+        #    await interaction.followup.send("Message 1")
+        #    await interaction.followup.send("Message 2")
         # To edit the original message:
-            # await interaction.response.edit_original_message(content="New content")
+        #    await interaction.response.edit_original_message(content="New content")
         # to edit second message:
-            # msg2 = await interaction.followup.send("Message 2")
-            # await msg2.edit(content="New content")
+        #    msg2 = await interaction.followup.send("Message 2")
+        #    await msg2.edit(content="New content")
         # to add reaction:
-            # await msg2.add_reaction("👍")
+        #    await msg2.add_reaction("👍")
 
     @app_command_name.error
     async def app_command_nameError(
