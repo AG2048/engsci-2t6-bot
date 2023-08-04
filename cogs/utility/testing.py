@@ -17,6 +17,10 @@ class TestingCog(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
+    async def on_ready(self) -> None:
+        print('Testing cog ready')
+
+    @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
         if message.author == self.bot.user:
             return

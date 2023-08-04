@@ -32,6 +32,7 @@ class MessageLoggingCog(commands.Cog):
             record each message + any attachment links.
         Any changes are appended to each respective log file immediately.
         """
+        print('MessageLoggingCog is ready.')
         if not os.path.exists(os.path.join('..', 'data', 'logging', 'message_stats')):
             os.makedirs(os.path.join('..', 'data', 'logging', 'message_stats'))
 
