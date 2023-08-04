@@ -16,6 +16,8 @@ To streamline collaboration, we utilize Cogs ([Cogs Documentation](https://disco
 
 For some examples of how to use Cogs, check the [Cogs](#cogs) section or see existing code.
 
+In each Cog, you can log activities using `await self.bot.log(self, log_message)`
+
 We will primarily be using the app_commands, which is the slash command feature of Discord.
 
 For an example of app_commands, check out cogs/utility/testing.py.

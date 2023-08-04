@@ -65,7 +65,7 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
             for role_id in self.users_ids_roles_ids[member.id]:
                 role = guild.get_role(role_id)
                 await member.add_roles(role)
-            await self.bot.log(self, f'User {member.mention} rejoined the server with roles: {[guild.get_role(role_id).mention for role_id in self.users_ids_roles_ids[member.id]]}.')
+            await self.bot.log(self, f'User {member.mention} rejoined the server and is given roles: {[guild.get_role(role_id).mention for role_id in self.users_ids_roles_ids[member.id]]}.')
 
 
 async def setup(bot: commands.Bot) -> None:

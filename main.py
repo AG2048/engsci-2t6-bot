@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
+import datetime
 
 load_dotenv()
 APPLICATION_ID = int(os.getenv('APPLICATION_ID'))
@@ -39,7 +40,8 @@ class Bot(commands.Bot):
         print(f'{type(cog).__name__}: {message}')
         embed = discord.Embed(
             title=f'{type(cog).__name__}',
-            description=message)
+            description=message,
+            timestamp=datetime.datetime.now())
         await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
 
 
