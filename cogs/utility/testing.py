@@ -7,13 +7,12 @@ from discord.ext import commands
 from typing import Optional
 
 
-# Load the table of reaction roles
 load_dotenv()
 SERVER_ID = int(os.getenv('SERVER_ID'))
 ADMINISTRATION_ROLES_IDS = [int(role_id) for role_id in os.getenv('ADMINISTRATION_ROLES_IDS').split(',')]
 
 
-class ReactionRolesCog(commands.Cog):
+class TestingCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -83,5 +82,5 @@ class ReactionRolesCog(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(
-        ReactionRolesCog(bot),
+        TestingCog(bot),
         guilds=[discord.Object(id=SERVER_ID)])
