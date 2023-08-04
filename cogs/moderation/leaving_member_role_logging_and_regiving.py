@@ -53,6 +53,7 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
         self.users_ids_roles_ids[user_id] = role_ids
         with open(self.left_users_roles_csv_full_path, 'a') as file:
             file.write(f'{user_id},"{",".join([str(role_id) for role_id in role_ids])}"\n')
+        await self.bot.log(self, f'User {payload.user.mention} left the server with roles: {[role.mention for role in payload.user.roles[1:]]}.')
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
@@ -62,9 +63,9 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
         if member.id in self.users_ids_roles_ids:
             guild = member.guild
             for role_id in self.users_ids_roles_ids[member.id]:
-                print(f"giving role {role_id} to {member.display_name}")
                 role = guild.get_role(role_id)
                 await member.add_roles(role)
+            await self.bot.log(self, f'User {member.mention} rejoined the server with roles: {[guild.get_role(role_id).mention for role_id in self.users_ids_roles_ids[member.id]]}.')
 
 
 async def setup(bot: commands.Bot) -> None:

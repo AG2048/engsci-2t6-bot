@@ -8,6 +8,7 @@ APPLICATION_ID = int(os.getenv('APPLICATION_ID'))
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
 SERVER_ID = int(os.getenv('SERVER_ID'))
+LOG_CHANNEL_ID = int(os.getenv('LOG_CHANNEL_ID'))
 
 
 class Bot(commands.Bot):
@@ -33,6 +34,13 @@ class Bot(commands.Bot):
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
+
+    async def log(self, cog: commands.Cog, message: str):
+        print(f'{type(cog).__name__}: {message}')
+        embed = discord.Embed(
+            title=f'{type(cog).__name__}',
+            description=message)
+        await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
 
 
 bot = Bot()
