@@ -1,12 +1,8 @@
 import os
 from dotenv import load_dotenv
 import discord
-from discord import app_commands
-from discord.app_commands import Choice
 from discord.ext import commands
-from typing import Optional
 import csv
-import datetime
 
 
 load_dotenv()
