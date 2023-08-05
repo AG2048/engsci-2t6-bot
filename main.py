@@ -10,6 +10,8 @@ DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX')
 SERVER_ID = int(os.getenv('SERVER_ID'))
 LOG_CHANNEL_ID = int(os.getenv('LOG_CHANNEL_ID'))
+print('discord bot token', DISCORD_BOT_TOKEN)
+print('command prefix', COMMAND_PREFIX)
 
 
 class Bot(commands.Bot):
