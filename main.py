@@ -23,8 +23,11 @@ class Bot(commands.Bot):
         # directory is cogs/directoryname/filename.py
         dirname = os.path.dirname(__file__)
         for directory in os.listdir(os.path.join(dirname, 'cogs')):
+            print('directory', directory)
             if os.path.isdir(os.path.join(dirname, 'cogs', directory)):
+                print('isdir')
                 for filename in os.listdir(os.path.join(dirname, 'cogs', directory)):
+                    print('filename', filename)
                     if filename.endswith('.py'):
                         print(f'Loading {filename[:-3]}')
                         await self.load_extension(f'cogs.{directory}.{filename[:-3]}')
