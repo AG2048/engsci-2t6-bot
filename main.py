@@ -20,23 +20,19 @@ class Bot(commands.Bot):
             application_id=APPLICATION_ID)
 
     async def setup_hook(self):
-        # directory is cogs/directoryname/filename.py
-        print('setup_hook')
+        # directory is cogs/directory_name/filename.py
         dirname = os.path.dirname(__file__)
         for directory in os.listdir(os.path.join(dirname, 'cogs')):
-            print('directory', directory)
             if os.path.isdir(os.path.join(dirname, 'cogs', directory)):
-                print('isdir')
                 for filename in os.listdir(os.path.join(dirname, 'cogs', directory)):
-                    print('filename', filename)
                     if filename.endswith('.py'):
-                        print(f'Loading {filename[:-3]}')
                         await self.load_extension(f'cogs.{directory}.{filename[:-3]}')
         await bot.tree.sync(guild=discord.Object(id=SERVER_ID))
 
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
+        await self.get_channel(LOG_CHANNEL_ID).send('Bot is ready')
 
     async def log(self, cog: commands.Cog, message: str):
         print(f'{type(cog).__name__}: {message}')
