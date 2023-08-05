@@ -21,13 +21,13 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
         # directory is cogs/directoryname/filename.py
-        for directory in os.listdir('./cogs'):
-            if os.path.isdir(f'./cogs/{directory}'):
-                for filename in os.listdir(f'./cogs/{directory}'):
+        for directory in os.listdir('cogs'):
+            if os.path.isdir(os.path.join('cogs', directory)):
+                for filename in os.listdir(os.path.join('cogs', directory)):
                     if filename.endswith('.py'):
                         await self.load_extension(f'cogs.{directory}.{filename[:-3]}')
 
-        for filename in os.listdir('./cogs'):
+        for filename in os.listdir('cogs'):
             if filename.endswith('.py'):
                 await self.load_extension(f'cogs.{filename[:-3]}')
         await bot.tree.sync(guild=discord.Object(id=SERVER_ID))
