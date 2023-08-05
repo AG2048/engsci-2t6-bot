@@ -25,6 +25,7 @@ class Bot(commands.Bot):
             if os.path.isdir(os.path.join('cogs', directory)):
                 for filename in os.listdir(os.path.join('cogs', directory)):
                     if filename.endswith('.py'):
+                        print(f'Loading {filename[:-3]}')
                         await self.load_extension(f'cogs.{directory}.{filename[:-3]}')
 
         for filename in os.listdir('cogs'):
@@ -45,5 +46,6 @@ class Bot(commands.Bot):
         await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
 
 
+print('Starting bot')
 bot = Bot()
 bot.run(DISCORD_BOT_TOKEN)
