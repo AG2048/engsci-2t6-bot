@@ -21,6 +21,7 @@ class Bot(commands.Bot):
 
     async def setup_hook(self):
         # directory is cogs/directoryname/filename.py
+        print('setup_hook')
         dirname = os.path.dirname(__file__)
         for directory in os.listdir(os.path.join(dirname, 'cogs')):
             print('directory', directory)
