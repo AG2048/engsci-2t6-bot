@@ -36,13 +36,27 @@ class Bot(commands.Bot):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
         print('------')
 
-    async def log(self, cog: commands.Cog, message: str):
-        print(f'{type(cog).__name__}: {message}')
-        embed = discord.Embed(
-            title=f'{type(cog).__name__}',
-            description=message,
-            timestamp=datetime.datetime.now())
-        await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
+    async def log(
+            self,
+            cog: commands.Cog,
+            user: discord.User = None,
+            user_action: str = None,
+            channel: discord.TextChannel = None,
+            event: str = None,
+            outcome: str = None) -> None:
+        # Who - user
+        # what - event, outcome (or error message)
+        # when - datetime.datetime.now()
+        # where - channel
+        # why - NONE
+        # how - user_action
+        pass
+        # print(f'{type(cog).__name__}: {message}')
+        # embed = discord.Embed(
+        #     title=f'{type(cog).__name__}',
+        #     description=message,
+        #     timestamp=datetime.datetime.now())
+        # await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
 
 
 bot = Bot()
