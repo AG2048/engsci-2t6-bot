@@ -515,6 +515,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         Check if the server has rules, if not, send a message saying that the server does not have rules.
         Set up a new embed message with title = name and description = description.
+        Load new embed to memory.
         Edit the server rules message to append the new embed message to the end of embeds.
         Write to csv file the new embed message (append should be fine).
         """
@@ -528,6 +529,15 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
         new_embed.set_footer(text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         new_embed.timestamp = datetime.datetime.now()
+
+        # Load new embed to memory.
+        self.server_rule_message_embeds_info_dict_list.append({
+            'title': name,
+            'description': description,
+            'thumbnail_url': '',
+            'colour': '',
+            'fields': []
+        })
 
         # Edit the server rules message to append the new embed message to the end of embeds.
         channel = self.bot.get_channel(self.server_rule_channel_id)
@@ -561,7 +571,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
     #     Takes input a type of addition DIFFERENT COMMANDS UNDER ONE GROUP /server_rules ...
     #     Ordering the commands:
     #       add_new:
-    #           ruleset, field
+    #           --ruleset--, field
     #       insert_new_before:
     #           ruleset, field
     #       edit:
