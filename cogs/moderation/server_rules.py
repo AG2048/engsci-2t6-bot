@@ -83,6 +83,30 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         If all is true, mark the server has rules.
         """
 
+        """
+        The server rules file is a csv file with the following format:
+        value_name,value
+        channel_id,123456789012345678
+        message_id,123456789012345678
+        message_content,This is the message content
+        embed_title,This is the embed title
+        embed_description,This is the embed description
+        embed_thumbnail_url,https://example.com/image.png
+        embed_colour,0x000000
+        embed_field_name,This is the field name
+        embed_field_value,This is the field value
+        embed_field_name,This is another field name
+        embed_field_value,This is another field value
+        embed_title,This is another embed title
+        embed_description,
+        embed_thumbnail_url,
+        embed_colour,
+        embed_field_name,This is the field name
+        embed_field_value,
+        
+        Any values that are empty will be set to None, except for the message_content, which will be set to 'none'
+        """
+
         # Get the current directory and the moderation directory
         curr_dir = os.path.abspath(os.path.dirname(__file__))
         self.moderation_dir = os.path.join(curr_dir, '..', '..', 'data', 'moderation')
@@ -335,17 +359,16 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             channel: discord.TextChannel,
             create_action: str) -> None:
         """
-        Sets server has rules to True. Since no matter what, the server will have rules after this command.
         If create_action is 'blank', create a blank message.
             Since this message could overwrite the current rules message, log the previous rules message.
+            Set server has rule to True.
             Send a new message, store the message id and channel id, and message content.
+            Send a success message.
         If create_action is 'stored_rules', create a message with the stored rules.
-
-
-        Create a new message to be used as the server rules message.
-        Check if the server already has rules.
-            If the server already has rules, send a message saying that the server already has rules.
-            If the server does not have rules, create a new message and set it as the server rules message.
+            No need to log the existing server rules, as we are writing new message with the existing server rules.
+            Load the server rules embeds from memory.
+            Write the message with the server rules message.
+            Send a success message.
         """
 
         # The server will have rules no matter what
@@ -458,6 +481,36 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             channel = self.bot.get_channel(self.server_rule_channel_id)
             message = await channel.fetch_message(self.server_rule_message_id)
             await interaction.response.send_message(message.jump_url, ephemeral=True)
+
+
+    # TODO: ANY EDITS TO THE RULES WILL ADD FOOTER OF WHO EDITED AND WHEN AND TIMEZONE
+    # TODO: AUTHOR WILL ALWAYS BE THE BOT
+    # TODO: BEFORE ANY COMMAND CALL, CHECK IF SERVER HAS RULES + CHECK IF RULE MESSAGE EXISTS, IF NOT MARK SERVER DOESN'T HAVE RULES YET
+
+
+    # TODO: multiple command to add to current rules
+    #     if along any point there's an error, send a message to the user with the reason of failure
+    #     This command can be used only if the server already has rules
+    #     Takes input a type of addition DIFFERENT COMMANDS UNDER ONE GROUP /server_rules ...
+    #     user inputs:
+    #         add_new_ruleset: Name of ruleset, description of ruleset
+    #         remove_existing_ruleset: select from existing ruleset titles
+    #         insert_new_ruleset_before: select from existing ruleset titles, new_ruleset_title, new_ruleset_description
+    #         edit_rule_embed_thumbnail: select from existing ruleset titles, thumbnail_url
+    #         edit_rule_embed_title: select from existing ruleset titles, title
+    #         edit_rule_embed_description: select from existing ruleset titles, description
+    #         remove_rule_embed_description: select from existing ruleset titles
+    #         add_new_field (note that any role/user mention will need to be in proper format of <@....>): select from existing ruleset titles, field_title, field_content (inline always false)
+    #         insert_new_field_before (note that any role/user mention will need to be in proper format of <@....>): select from existing ruleset titles-field_title, new_field_title, new_field_content.
+    #         edit_existing_field (note that any role/user mention will need to be in proper format of <@....>): select from ruleset titles-field_title, OPTIONAL (non-empty): new_field_title, new_field_content.
+    #         remove_existing_field: select from ruleset titles-field_title
+    #         edit_rule_embed_color: select from existing ruleset titles, color
+    #         remove_rule_embed_thumbnail: select from existing ruleset titles
+    # TODO: one command to retrieve ONE specific rule (display in channel and disappear after 5 minutes)
+    #     This command can be used only if the server already has rules
+    #     Has cooldown unless the user is a moderator
+    #     Takes input a ruleset title-rule_field_title
+    #     outputs: embed with rule title, rule description, rule_field (specific to the rule), rule_thumbnail, rule_color
 
 
 async def setup(bot: commands.Bot) -> None:
