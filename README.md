@@ -70,7 +70,7 @@ engsci-2t6-bot
 
 TODO: explain each file's purpose and structure
 
-# .env File
+# Environment Variables
 The `.env` file is a file that contains all the environment variables that the bot will need to run. This includes the bot's token, the server's ID, etc. This file is not included in the repository for security reasons. If you need to run the bot locally, you will need to create this file yourself. The file should be in the same directory as `main.py`.
 The content of this file should be as follows:
 - APPLICATION_ID=<APPLICATION_ID>
@@ -156,3 +156,36 @@ We plan to incorporate the following features into our Discord bot. Additional f
 
 # Cogs
 A guide on how to use Cogs will be added here soon.
+
+# Hosting
+I am hosting the bot on a Raspberry Pi 4B 4GB. I am using the following method to run the bot:
+
+1. Create a virtual environment in the project directory:
+    - `python3 -m venv venv`
+    - `source venv/bin/activate`
+    - `pip install -r requirements.txt`
+2. Create a `.env` file in the project directory and add the environment variables listed [here](#environment-variables).
+3. Set up a systemctl service to run the bot in the background:
+    - `sudo nano /etc/systemd/system/engsci-2t6-bot.service`
+    - Paste the following into the file:
+        ```
+        [Unit]
+        Description=EngSci 2T6 Discord Bot
+        Requires=mnt-<DRIVE_THIS_BOT_RUNS_ON>.mount # If the bot is running on a mounted drive
+        After=mnt-<DRIVE_THIS_BOT_RUNS_ON>.mount # If the bot is running on a mounted drive
+        
+        [Service]
+        Type=simple
+        User=<USERNAME>
+        WorkingDirectory=<PATH_TO_DIRECTORY>/engsci-2t6-bot/
+        EnvironmentFile=<PATH_TO_DIRECTORY>/engsci-2t6-bot/.env
+        Environment="PATH=<PATH_TO_DIRECTORY>/engsci-2t6-bot/venv/bin"
+        ExecStart=<PATH_TO_DIRECTORY>/engsci-2t6-bot/venv/bin/python3 <PATH_TO_DIRECTORY>/engsci-2t6-bot/main.py
+        Restart=always
+        [Install]
+        After=mnt-<DRIVE_THIS_BOT_RUNS_ON>.mount # If the bot is running on a mounted drive
+        ```
+    - `sudo systemctl daemon-reload`
+    - `sudo systemctl enable engsci-2t6-bot.service`
+    - `sudo systemctl start engsci-2t6-bot.service`
+    - `sudo systemctl status engsci-2t6-bot.service` to check the status of the service
