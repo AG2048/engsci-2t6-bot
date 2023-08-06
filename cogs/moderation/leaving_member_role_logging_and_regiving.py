@@ -20,21 +20,28 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
     async def on_ready(self):
         """
         On ready, check of a role logging file exists, if not, create it.
-        Also load the file into memory.
+        Load the file into memory. Newer entries about the same user will overwrite older entries.
         """
+
+        # Get file path
         curr_dir = os.path.abspath(os.path.dirname(__file__))
         self.moderation_dir = os.path.join(curr_dir, '..', '..', 'data', 'moderation')
         self.left_users_roles_csv_full_path = os.path.join(self.moderation_dir, 'left_users_roles.csv')
+
+        # Check if file exists
         if not os.path.isfile(self.left_users_roles_csv_full_path):
             # File does not exist
             os.makedirs(self.moderation_dir, exist_ok=True)
             with open(self.left_users_roles_csv_full_path, 'w') as file:
                 # Write header: user_id, role_ids
                 file.write('user_id,role_ids\n')
+
+        # Load file into memory
         with open(self.left_users_roles_csv_full_path, 'r') as file:
             reader = csv.reader(file)
             next(reader)
             for row in reader:
+                # This way of storing the data will overwrite older entries about the same user
                 self.users_ids_roles_ids[int(row[0])] = [int(role_id) for role_id in row[1].split(',')]
         print('LeavingMemberRoleLoggingCog is ready.')
 
@@ -42,7 +49,7 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
     async def on_raw_member_remove(self, payload: discord.RawMemberRemoveEvent) -> None:
         """
         On member remove, log the member's roles and the time of removal.
-        Be sure to exclude @everyone role (the first role in the list).
+        Exclude @everyone role (the first role in the list), as it is not a role that can be given back.
         """
         user_id = payload.user.id
         role_ids = [role.id for role in payload.user.roles][1:]  # exclude @everyone
