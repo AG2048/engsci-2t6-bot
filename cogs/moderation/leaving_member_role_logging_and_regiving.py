@@ -23,6 +23,14 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
         Load the file into memory. Newer entries about the same user will overwrite older entries.
         """
 
+        """
+        The role logging file is a csv file with the following format:
+        user_id,role_ids
+        <USER_ID>,"<ROLE_ID_1>,<ROLE_ID_2>,<ROLE_ID_3>,<ROLE_ID_4>,<ROLE_ID_5>"
+        <USER_ID>,"<ROLE_ID_1>,<ROLE_ID_2>"
+        <USER_ID>,"<ROLE_ID_1>"
+        """
+
         # Get file path
         curr_dir = os.path.abspath(os.path.dirname(__file__))
         self.moderation_dir = os.path.join(curr_dir, '..', '..', 'data', 'moderation')
