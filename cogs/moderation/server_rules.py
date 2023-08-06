@@ -249,6 +249,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 previous_rules_embeds = []
                 for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
                     embed = discord.Embed()
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
                     embed.title = embed_info_dict['title']
                     embed.description = embed_info_dict['description']
                     embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
@@ -304,6 +305,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             embeds = []
             for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
                 embed = discord.Embed()
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
                 embed.title = embed_info_dict['title']
                 embed.description = embed_info_dict['description']
                 embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
@@ -390,6 +392,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 previous_rules_embeds = []
                 for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
                     embed = discord.Embed()
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
                     embed.title = embed_info_dict['title']
                     embed.description = embed_info_dict['description']
                     embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
@@ -423,6 +426,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             embeds = []
             for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
                 embed = discord.Embed()
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
                 embed.title = embed_info_dict['title']
                 embed.description = embed_info_dict['description']
                 embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
@@ -499,7 +503,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         description='(Optional) The description of the ruleset.')
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
-    async def set_rules_to_existing_message(
+    async def add_new_ruleset(
             self,
             interaction: discord.Interaction,
             name: str,
@@ -514,10 +518,37 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         Edit the server rules message to append the new embed message to the end of embeds.
         Write to csv file the new embed message (append should be fine).
         """
-        await interaction.response.send_message("Command not implemented", ephemeral=True)
-        pass
+        # Check if the server has rules, if not, send a message saying that the server does not have rules.
+        if not self.server_has_rule:
+            await interaction.response.send_message('Server does not have a rules message linked to the bot yet.', ephemeral=True)
+            return
+
+        # Set up a new embed message with title = name and description = description.
+        new_embed = discord.Embed(title=name, description=description)
+        new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+        new_embed.set_footer(text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+        new_embed.timestamp = datetime.datetime.now()
+
+        # Edit the server rules message to append the new embed message to the end of embeds.
+        channel = self.bot.get_channel(self.server_rule_channel_id)
+        message = await channel.fetch_message(self.server_rule_message_id)
+        await message.edit(content=message.content, embeds=message.embeds + [new_embed])
+
+        # Write to csv file the new embed message (append should be fine).
+        with open(self.server_rules_csv_full_path, 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=',')
+            writer.writerow(['embed_title', name])
+            writer.writerow(['embed_description', description if description else ''])
+            writer.writerow(['embed_thumbnail_url', ''])
+            writer.writerow(['embed_colour', ''])
+            writer.writerow(['embed_field_name', ''])
+            writer.writerow(['embed_field_value', ''])
+
+        # Send a message to the user saying that the new ruleset has been added.
+        await interaction.response.send_message('New ruleset added.', ephemeral=True)
 
     # TODO: check if I spelled color or colour
+    # TODO: make a write_to_csv function
 
     # TODO: ANY EDITS TO THE RULES WILL ADD FOOTER OF WHO EDITED AND WHEN AND TIMEZONE
     # TODO: AUTHOR WILL ALWAYS BE THE BOT
