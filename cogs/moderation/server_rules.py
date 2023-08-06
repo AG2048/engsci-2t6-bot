@@ -134,7 +134,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 elif row[0] == 'embed_title':
                     # An embed_title field indicates a new embed, even if it's empty
                     self.server_rule_message_embeds_info_dict_list.append({
-                        'title': row[1] if len(row[1]) > 0 else None,
+                        'title': row[1] if len(row[1]) > 0 else "none",
                         'description': None,
                         'thumbnail_url': None,
                         'colour': None,
@@ -157,14 +157,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 elif row[0] == 'embed_field_value':
                     self.server_rule_message_embeds_info_dict_list[-1]['fields'][-1]['value'] = row[1] if len(row[1]) > 0 else None
 
-        # Ensure that no embed is completely empty (no title, description, thumbnail, or fields)
-        # If it is, remove it
-        self.server_rule_message_embeds_info_dict_list = [embed_info_dict for embed_info_dict in
-                                                            self.server_rule_message_embeds_info_dict_list if
-                                                            embed_info_dict['title'] is not None or
-                                                            embed_info_dict['description'] is not None or
-                                                            embed_info_dict['thumbnail_url'] is not None or
-                                                            embed_info_dict['fields'] != []]
+        # New update: We now enforce title to be "none" if it's empty
 
         # Check if the file has the channel_id and message_id
         if self.server_rule_channel_id and self.server_rule_message_id:
@@ -277,7 +270,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             self.server_rule_message_embeds_info_dict_list = []
             for embed in message.embeds:
                 embed_info_dict = {
-                    'title': embed.title,
+                    'title': embed.title if embed.title is not None else 'none',
                     'description': embed.description,
                     'thumbnail_url': embed.thumbnail.url,
                     # Colour.value can be converted to a hex string. Or it can be None.
@@ -556,6 +549,83 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         # Send a message to the user saying that the new ruleset has been added.
         await interaction.response.send_message('New ruleset added.', ephemeral=True)
+
+    @add_new_ruleset.error
+    async def add_new_rulesetError(
+            self,
+            interaction: discord.Interaction,
+            error: app_commands.AppCommandError):
+        """
+        Error handler for add_new_ruleset command.
+        Currently only handles MissingAnyRole error, where the user does not have any of the required roles.
+        """
+        if isinstance(error, app_commands.MissingAnyRole):
+            await interaction.response.send_message('You need to be an administrator to use this command.',
+                                                    ephemeral=True)
+
+    # @app_commands.command(
+    #     name='add_new_field',
+    #     description='Add a new embed field to a ruleset embed.')
+    # @app_commands.describe(
+    #     name='The name of the ruleset.',
+    #     description='(Optional) The description of the ruleset.')
+    # @app_commands.guilds(SERVER_ID)
+    # @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
+    # async def add_new_ruleset(
+    #         self,
+    #         interaction: discord.Interaction,
+    #         name: str,
+    #         description: Optional[str] = None) -> None:
+    #     """
+    #     Add a new embed message to the server rules message with title = name and description = description.
+    #     This command can be used only if the server already has rules.
+    #     We arbitrarily set that all embeds set by this Cog will need to have a title.
+    #
+    #     Check if the server has rules, if not, send a message saying that the server does not have rules.
+    #     Set up a new embed message with title = name and description = description.
+    #     Load new embed to memory.
+    #     Edit the server rules message to append the new embed message to the end of embeds.
+    #     Write to csv file the new embed message (append should be fine).
+    #     """
+    #     # Check if the server has rules, if not, send a message saying that the server does not have rules.
+    #     if not self.server_has_rule:
+    #         await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
+    #                                                 ephemeral=True)
+    #         return
+    #
+    #     # Set up a new embed message with title = name and description = description.
+    #     new_embed = discord.Embed(title=name, description=description)
+    #     new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+    #     new_embed.set_footer(
+    #         text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+    #     new_embed.timestamp = datetime.datetime.now()
+    #
+    #     # Load new embed to memory.
+    #     self.server_rule_message_embeds_info_dict_list.append({
+    #         'title': name,
+    #         'description': description,
+    #         'thumbnail_url': '',
+    #         'colour': '',
+    #         'fields': []
+    #     })
+    #
+    #     # Edit the server rules message to append the new embed message to the end of embeds.
+    #     channel = self.bot.get_channel(self.server_rule_channel_id)
+    #     message = await channel.fetch_message(self.server_rule_message_id)
+    #     await message.edit(content=message.content, embeds=message.embeds + [new_embed])
+    #
+    #     # Write to csv file the new embed message (append should be fine).
+    #     with open(self.server_rules_csv_full_path, 'a', newline='') as csvfile:
+    #         writer = csv.writer(csvfile, delimiter=',')
+    #         writer.writerow(['embed_title', name])
+    #         writer.writerow(['embed_description', description if description else ''])
+    #         writer.writerow(['embed_thumbnail_url', ''])
+    #         writer.writerow(['embed_colour', ''])
+    #         writer.writerow(['embed_field_name', ''])
+    #         writer.writerow(['embed_field_value', ''])
+    #
+    #     # Send a message to the user saying that the new ruleset has been added.
+    #     await interaction.response.send_message('New ruleset added.', ephemeral=True)
 
     # TODO: check if I spelled color or colour
     # TODO: make a write_to_csv function
