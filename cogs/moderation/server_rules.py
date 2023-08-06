@@ -157,6 +157,15 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 elif row[0] == 'embed_field_value':
                     self.server_rule_message_embeds_info_dict_list[-1]['fields'][-1]['value'] = row[1] if len(row[1]) > 0 else None
 
+        # Ensure that no embed is completely empty (no title, description, thumbnail, or fields)
+        # If it is, remove it
+        self.server_rule_message_embeds_info_dict_list = [embed_info_dict for embed_info_dict in
+                                                            self.server_rule_message_embeds_info_dict_list if
+                                                            embed_info_dict['title'] is not None or
+                                                            embed_info_dict['description'] is not None or
+                                                            embed_info_dict['thumbnail_url'] is not None or
+                                                            embed_info_dict['fields'] != []]
+
         # Check if the file has the channel_id and message_id
         if self.server_rule_channel_id and self.server_rule_message_id:
             # Check if the channel AND message exists in the server using try-except
@@ -482,6 +491,33 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
             await interaction.response.send_message(message.jump_url, ephemeral=True)
 
+    @app_commands.command(
+        name='add_new_ruleset',
+        description='Add a new embed ruleset to the server rules message.')
+    @app_commands.describe(
+        name='The name of the ruleset.',
+        description='(Optional) The description of the ruleset.')
+    @app_commands.guilds(SERVER_ID)
+    @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
+    async def set_rules_to_existing_message(
+            self,
+            interaction: discord.Interaction,
+            name: str,
+            description: Optional[str] = None) -> None:
+        """
+        Add a new embed message to the server rules message with title = name and description = description.
+        This command can be used only if the server already has rules.
+        We arbitrarily set that all embeds set by this Cog will need to have a title.
+
+        Check if the server has rules, if not, send a message saying that the server does not have rules.
+        Set up a new embed message with title = name and description = description.
+        Edit the server rules message to append the new embed message to the end of embeds.
+        Write to csv file the new embed message (append should be fine).
+        """
+        await interaction.response.send_message("Command not implemented", ephemeral=True)
+        pass
+
+    # TODO: check if I spelled color or colour
 
     # TODO: ANY EDITS TO THE RULES WILL ADD FOOTER OF WHO EDITED AND WHEN AND TIMEZONE
     # TODO: AUTHOR WILL ALWAYS BE THE BOT
@@ -492,6 +528,15 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
     #     if along any point there's an error, send a message to the user with the reason of failure
     #     This command can be used only if the server already has rules
     #     Takes input a type of addition DIFFERENT COMMANDS UNDER ONE GROUP /server_rules ...
+    #     Ordering the commands:
+    #       add_new:
+    #           ruleset, field
+    #       insert_new_before:
+    #           ruleset, field
+    #       edit:
+    #           ruleset thumbnail, ruleset title, ruleset description, ruleset colour, field
+    #       remove:
+    #           ruleset, (WE DON'T WANT TO REMOVE TITLE) ruleset title, ruleset description, ruleset colour, field
     #     user inputs:
     #         add_new_ruleset: Name of ruleset, description of ruleset
     #         remove_existing_ruleset: select from existing ruleset titles
