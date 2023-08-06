@@ -486,9 +486,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.', ephemeral=True)
         else:
-            channel = self.bot.get_channel(self.server_rule_channel_id)
-            message = await channel.fetch_message(self.server_rule_message_id)
-            await interaction.response.send_message(message.jump_url, ephemeral=True)
+            try:
+                channel = self.bot.get_channel(self.server_rule_channel_id)
+                message = await channel.fetch_message(self.server_rule_message_id)
+                await interaction.response.send_message(message.jump_url, ephemeral=True)
+            except discord.errors.NotFound:
+                await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+                self.server_has_rule = False
 
     @app_commands.command(
         name='add_new_ruleset',
@@ -535,8 +539,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         })
 
         # Edit the server rules message to append the new embed message to the end of embeds.
-        channel = self.bot.get_channel(self.server_rule_channel_id)
-        message = await channel.fetch_message(self.server_rule_message_id)
+        try:
+            channel = self.bot.get_channel(self.server_rule_channel_id)
+            message = await channel.fetch_message(self.server_rule_message_id)
+        except discord.errors.NotFound:
+            await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            self.server_has_rule = False
+            return
         await message.edit(content=message.content, embeds=message.embeds + [new_embed])
 
         # Write to csv file the new embed message (append should be fine).
@@ -618,8 +627,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         })
 
         # Edit the server rules message to append the new embed message to the end of embeds.
-        channel = self.bot.get_channel(self.server_rule_channel_id)
-        message = await channel.fetch_message(self.server_rule_message_id)
+        try:
+            channel = self.bot.get_channel(self.server_rule_channel_id)
+            message = await channel.fetch_message(self.server_rule_message_id)
+        except discord.errors.NotFound:
+            await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            self.server_has_rule = False
+            return
         await message.edit(content=message.content, embeds=message.embeds + [new_embed])
 
         # Write to csv file the new embed message (append should be fine).
