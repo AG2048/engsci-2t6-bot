@@ -150,14 +150,14 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='set_rules_to_existing_message',
-        description='Set an existing message sent by the bot as the server rules message. If existing rules will be overwritten, the bot will log the existing rules in the log channel.')
+        description='Set an existing message sent by the bot as the server rules message.')
     @app_commands.describe(
         channel='The channel where the message is located.',
         message_id='The message ID of the message to be set as the server rules message.',
         set_action='Whether to use this message as the server rules or to overwrite this message with existing server rules stored in the bot.')
     @app_commands.choices(
         set_action=[
-            Choice(name="Use This Message As Rules", value="this_message"),
+            Choice(name="Use This Message As Rules (bot logs cached rules)", value="this_message"),
             Choice(name="Overwrite This Message And Use Stored Rules", value="overwrite")])
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -208,31 +208,32 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message('Message does not exist in the channel.', ephemeral=True)
             return
 
-        # Checks passed, set server has rule to True
-        self.server_has_rule = True
-
         if set_action == 'this_message':
             # If set_action is 'this_message', set the message and its contents as the server rules message
 
-            # Log previous rules message in the log channel
-            previous_rules_embeds = []
-            for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
-                embed = discord.Embed()
-                embed.title = embed_info_dict['title']
-                embed.description = embed_info_dict['description']
-                embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
-                # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
-                embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict['colour'] else None
-                for field in embed_info_dict['fields']:
-                    embed.add_field(name=field['name'], value=field['value'], inline=False)
-                embed.set_footer(
-                    # This tells us who updated the rules and when
-                    text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
-                embed.timestamp = datetime.datetime.now()
-                previous_rules_embeds.append(embed)
-            log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
-            # Send log message, mention it is a rule change.
-            await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}', embeds=previous_rules_embeds)
+            if self.server_has_rule:
+                # Log previous rules message in the log channel, only if the server previously has rules
+                previous_rules_embeds = []
+                for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                    embed = discord.Embed()
+                    embed.title = embed_info_dict['title']
+                    embed.description = embed_info_dict['description']
+                    embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
+                    # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
+                    embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict['colour'] else None
+                    for field in embed_info_dict['fields']:
+                        embed.add_field(name=field['name'], value=field['value'], inline=False)
+                    embed.set_footer(
+                        # This tells us who updated the rules and when
+                        text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                    embed.timestamp = datetime.datetime.now()
+                    previous_rules_embeds.append(embed)
+                log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
+                # Send log message, mention it is a rule change.
+                await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}', embeds=previous_rules_embeds)
+
+            # Checks passed, set server has rule to True (After we log the previous rules)
+            self.server_has_rule = True
 
             # Update server rules message in memory
             self.server_rule_channel_id = channel.id
@@ -260,6 +261,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         elif set_action == 'overwrite':
             # If set_action is 'overwrite', overwrite the message with the server rules message
+
+            # Checks passed, set server has rule to True
+            self.server_has_rule = True
 
             # This action only changes the id of the message, so we don't need to log the previous rules message.
             self.server_rule_channel_id = channel.id
@@ -312,6 +316,148 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         """
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.', ephemeral=True)
+
+    @app_commands.command(
+        name='create_new_rules_message',
+        description='Create a new message to be used as the server rules message.')
+    @app_commands.describe(
+        channel='The channel where the message should be created.',
+        create_action='Whether to create a blank message or create a message with stored rules.')
+    @app_commands.choices(
+        create_action=[
+            Choice(name="Create Blank Message", value="blank"),
+            Choice(name="Create Message With Stored Rules", value="stored_rules")])
+    @app_commands.guilds(SERVER_ID)
+    @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
+    async def create_new_rules_message(
+            self,
+            interaction: discord.Interaction,
+            channel: discord.TextChannel,
+            create_action: str) -> None:
+        """
+        Sets server has rules to True. Since no matter what, the server will have rules after this command.
+        If create_action is 'blank', create a blank message.
+            Since this message could overwrite the current rules message, log the previous rules message.
+            Send a new message, store the message id and channel id, and message content.
+        If create_action is 'stored_rules', create a message with the stored rules.
+
+
+        Create a new message to be used as the server rules message.
+        Check if the server already has rules.
+            If the server already has rules, send a message saying that the server already has rules.
+            If the server does not have rules, create a new message and set it as the server rules message.
+        """
+
+        # The server will have rules no matter what
+
+        if create_action == 'blank':
+            # If create_action is 'blank', create a blank message
+
+            if self.server_has_rule:
+                # Log previous rules message in the log channel, only if the server previously has rules
+                previous_rules_embeds = []
+                for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                    embed = discord.Embed()
+                    embed.title = embed_info_dict['title']
+                    embed.description = embed_info_dict['description']
+                    embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
+                    # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
+                    embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict[
+                        'colour'] else None
+                    for field in embed_info_dict['fields']:
+                        embed.add_field(name=field['name'], value=field['value'], inline=False)
+                    embed.set_footer(
+                        # This tells us who updated the rules and when
+                        text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                    embed.timestamp = datetime.datetime.now()
+                    previous_rules_embeds.append(embed)
+                log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
+                # Send log message, mention it is a rule change.
+                await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
+                                       embeds=previous_rules_embeds)
+
+            self.server_has_rule = True
+            message = await channel.send('New server rules message.')
+            # Set the server rules message to the new message
+            self.server_rule_channel_id = channel.id
+            self.server_rule_message_id = message.id
+            self.server_rule_message_content = message.content
+            self.server_rule_message_embeds_info_dict_list = []
+            # Send success message
+            await interaction.response.send_message('Server rules set to a newly-sent blank message.', ephemeral=True)
+        elif create_action == 'stored_rules':
+            # If create_action is 'stored_rules', create a message with the stored rules
+            self.server_has_rule = True
+            embeds = []
+            for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                embed = discord.Embed()
+                embed.title = embed_info_dict['title']
+                embed.description = embed_info_dict['description']
+                embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
+                # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
+                embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict['colour'] else None
+                for field in embed_info_dict['fields']:
+                    embed.add_field(name=field['name'], value=field['value'], inline=False)
+                embed.set_footer(text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                embed.timestamp = datetime.datetime.now()
+                embeds.append(embed)
+            message = await channel.send(content=self.server_rule_message_content, embeds=embeds)
+
+            # Set the server rules message to the new message
+            self.server_rule_channel_id = channel.id
+            self.server_rule_message_id = message.id
+            # Send success message
+            await interaction.response.send_message('Server rules set to a newly-sent message (from stored rules).', ephemeral=True)
+
+        # Write to file any changes
+        # Any None values are converted to empty strings
+        with open(self.server_rules_csv_full_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=',')
+            writer.writerow(['value_name', 'value'])
+            writer.writerow(['channel_id', self.server_rule_channel_id])
+            writer.writerow(['message_id', self.server_rule_message_id])
+            writer.writerow(['message_content', self.server_rule_message_content])
+            for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                writer.writerow(['embed_title', embed_info_dict['title'] if embed_info_dict['title'] else ''])
+                writer.writerow(
+                    ['embed_description', embed_info_dict['description'] if embed_info_dict['description'] else ''])
+                writer.writerow(['embed_thumbnail_url',
+                                 embed_info_dict['thumbnail_url'] if embed_info_dict['thumbnail_url'] else ''])
+                writer.writerow(['embed_colour', embed_info_dict['colour'] if embed_info_dict['colour'] else ''])
+                for field in embed_info_dict['fields']:
+                    writer.writerow(['embed_field_name', field['name'] if field['name'] else ''])
+                    writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
+
+    @create_new_rules_message.error
+    async def create_new_rules_messageError(
+            self,
+            interaction: discord.Interaction,
+            error: app_commands.AppCommandError):
+        """
+        Error handler for create_new_rules_message command.
+        Currently only handles MissingAnyRole error, where the user does not have any of the required roles.
+        """
+        if isinstance(error, app_commands.MissingAnyRole):
+            await interaction.response.send_message('You need to be an administrator to use this command.',
+                                                    ephemeral=True)
+
+    @app_commands.command(
+        name='get_link',
+        description='Get the link to the server rules message.')
+    @app_commands.guilds(SERVER_ID)
+    async def get_link(
+            self,
+            interaction: discord.Interaction) -> None:
+        """
+        Get the link to the server rules message.
+        If the server does not have rules, send a message saying that the server does not have rules.
+        """
+        if not self.server_has_rule:
+            await interaction.response.send_message('Server does not have a rules message linked to the bot yet.', ephemeral=True)
+        else:
+            channel = self.bot.get_channel(self.server_rule_channel_id)
+            message = await channel.fetch_message(self.server_rule_message_id)
+            await interaction.response.send_message(message.jump_url, ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
