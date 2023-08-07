@@ -10,6 +10,24 @@ This repository houses the development of an upcoming Discord bot for the UofT E
 - [Cogs](#cogs)
 
 # Completed Functionalities
+## Main Bot
+### Logging:
+`main.py`
+
+We also added a `bot.log()` function that will facilitate logging to the console and to the discord server.
+It takes in an organized set of information:
+```py
+cog: commands.Cog,
+user: discord.User = None,
+user_action: str = None,
+channel: discord.TextChannel = None,
+event: str = None,
+outcome: str = None
+```
+And it can go through each of the information and process them according to their data type.
+
+In the end, it sends an embed message to the log channel indicating the cog that the log is from, the user that triggered the log, the user action that triggered the log, the channel that the log is from, the event that triggered the log, and the outcome of the event. At the same time, a similar message is being displayed to the console through `print()`.
+
 ## Moderation:
 Any functionality that is related to moderation of the server.
 ### Server Rules:
