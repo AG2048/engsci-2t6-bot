@@ -66,20 +66,20 @@ class Bot(commands.Bot):
         embed.timestamp = datetime.datetime.now()
         embed.set_author(name=self.user.name, icon_url=self.user.avatar.url)
         if user is not None:
-            embed.add_field(name='User: ', value=f'{user.mention} ({user.id})')
+            embed.add_field(name='User: ', value=f'{user.mention} ({user.id})', inline=False)
             embed.set_footer(text=f'{user.name}{("#"+user.discriminator) if len(user.discriminator) > 1 else ""} ({user.id})', icon_url=user.avatar.url)
             log_message += f'\n\t User: {user.name}{("#"+user.discriminator) if len(user.discriminator) > 1 else ""} ({user.id})'
         if user_action is not None:
-            embed.add_field(name='User Action: ', value=user_action)
+            embed.add_field(name='User Action: ', value=user_action, inline=False)
             log_message += f'\n\t User Action: {user_action}'
         if channel is not None:
-            embed.add_field(name='In Channel: ', value=f'{channel.mention} ({channel.id})')
+            embed.add_field(name='In Channel: ', value=f'{channel.mention} ({channel.id})', inline=False)
             log_message += f'\n\t In Channel: {channel.name} ({channel.id})'
         if event is not None:
-            embed.add_field(name='Event: ', value=event)
+            embed.add_field(name='Event: ', value=event, inline=False)
             log_message += f'\n\t Event: {event}'
         if outcome is not None:
-            embed.add_field(name='Outcome: ', value=outcome)
+            embed.add_field(name='Outcome: ', value=outcome, inline=False)
             log_message += f'\n\t Outcome: {outcome}'
         await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
         print(log_message)
