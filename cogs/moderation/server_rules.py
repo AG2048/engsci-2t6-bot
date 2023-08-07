@@ -2167,41 +2167,88 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
-    # TODO: check if I spelled color or colour
-    # TODO: make a write_to_csv function
-    # TODO: let all success message include a button to the rules message:
 
-    # TODO: ANY EDITS TO THE RULES WILL ADD FOOTER OF WHO EDITED AND WHEN AND TIMEZONE
-    # TODO: AUTHOR WILL ALWAYS BE THE BOT
-    # TODO: BEFORE ANY COMMAND CALL, CHECK IF SERVER HAS RULES + CHECK IF RULE MESSAGE EXISTS, IF NOT MARK SERVER DOESN'T HAVE RULES YET
+    @app_commands.command(
+        name='display_rule',
+        description='Display a rule from the server rules message for 5 minutes.')
+    @app_commands.describe(
+        rule_name='The ruleset and title of the rule to display.')
+    @app_commands.autocomplete(rule_name=fields_autocomplete)
+    @app_commands.guilds(SERVER_ID)
+    @app_commands.checks.cooldown(1, 10.0)
+    async def display_rule(
+            self,
+            interaction: discord.Interaction,
+            rule_name: str) -> None:
+        """
+        Display the chosen rule for 5 minutes.
+        Display embed includes:
+            Author, thumbnail, Colour, Title, Field, Footnote
 
+        Check if the server has rules, if not, send a message saying that the server does not have rules.
+        Check if server rules message still exists, if not, send a message saying that.
+        Find index of ruleset AND index of field.
+        Load that embed from the rules message
+        Create new embed with Author, thumbnail, colour, title, field, footnote, timestamp
+        Display it with delete_after=300
+        """
+        possible_ruleset_and_fields = [f"{embed_info_dict['title']} - {field['name']} ({i},{j})" for i, embed_info_dict
+                                       in enumerate(self.server_rule_message_embeds_info_dict_list, 1) for j, field in
+                                       enumerate(embed_info_dict['fields'], 1)]
 
-    # TODO: multiple command to add to current rules
-    #     if along any point there's an error, send a message to the user with the reason of failure
-    #     This command can be used only if the server already has rules
-    #     Takes input a type of addition DIFFERENT COMMANDS UNDER ONE GROUP /server_rules ...
-    #     Ordering the commands:
-    #       remove:
-    #           ruleset, field
-    #     user inputs:
-    #         add_new_ruleset: Name of ruleset, description of ruleset
-    #         remove_existing_ruleset: select from existing ruleset titles
-    #         insert_new_ruleset_before: select from existing ruleset titles, new_ruleset_title, new_ruleset_description
-    #         edit_rule_embed_thumbnail: select from existing ruleset titles, thumbnail_url
-    #         edit_rule_embed_title: select from existing ruleset titles, title
-    #         edit_rule_embed_description: select from existing ruleset titles, description
-    #         remove_rule_embed_description: select from existing ruleset titles
-    #         add_new_field (note that any role/user mention will need to be in proper format of <@....>): select from existing ruleset titles, field_title, field_content (inline always false)
-    #         insert_new_field_before (note that any role/user mention will need to be in proper format of <@....>): select from existing ruleset titles-field_title, new_field_title, new_field_content.
-    #         edit_existing_field (note that any role/user mention will need to be in proper format of <@....>): select from ruleset titles-field_title, OPTIONAL (non-empty): new_field_title, new_field_content.
-    #         remove_existing_field: select from ruleset titles-field_title
-    #         edit_rule_embed_color: select from existing ruleset titles, color
-    #         remove_rule_embed_thumbnail: select from existing ruleset titles
-    # TODO: one command to retrieve ONE specific rule (display in channel and disappear after 5 minutes)
-    #     This command can be used only if the server already has rules
-    #     Has cooldown unless the user is a moderator
-    #     Takes input a ruleset title-rule_field_title
-    #     outputs: embed with rule title, rule description, rule_field (specific to the rule), rule_thumbnail, rule_color
+        if rule_name not in possible_ruleset_and_fields:
+            await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            return
+        ruleset_index = 0
+        field_index = 0
+        for i in range(len(self.server_rule_message_embeds_info_dict_list)):
+            for j in range(len(self.server_rule_message_embeds_info_dict_list[i]['fields'])):
+                if rule_name == f"{self.server_rule_message_embeds_info_dict_list[i]['title']} - {self.server_rule_message_embeds_info_dict_list[i]['fields'][j]['name']} ({i + 1},{j + 1})":
+                    ruleset_index = i
+                    field_index = j
+                    break
+        # Check if the server has rules, if not, send a message saying that the server does not have rules.
+        if not self.server_has_rule:
+            await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
+                                                    ephemeral=True)
+            return
+
+        try:
+            channel = self.bot.get_channel(self.server_rule_channel_id)
+            message = await channel.fetch_message(self.server_rule_message_id)
+        except discord.errors.NotFound:
+            await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            self.server_has_rule = False
+            return
+
+        embeds = message.embeds
+        embed = embeds[ruleset_index]
+
+        display_embed = discord.Embed(title=embed.title)
+        display_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+        display_embed.set_thumbnail(url=embed.thumbnail.url)
+        display_embed.colour = embed.colour
+        display_embed.add_field(name=embed.fields[field_index].name, value=embed.fields[field_index].value, inline=False)
+        display_embed.set_footer(text=f'Rule display should disappear after 5 minutes at ({(datetime.datetime.now()+datetime.timedelta(minutes=5)).astimezone().tzinfo.tzname((datetime.datetime.now()+datetime.timedelta(minutes=5)).astimezone())})')
+        display_embed.timestamp = datetime.datetime.now()+datetime.timedelta(minutes=5)
+
+        # Send a message to the user saying that the field has been edited.
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Rules Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message(embed=display_embed, view=url_view, delete_after=300)
+
+    @display_rule.error
+    async def display_ruleError(
+            self,
+            interaction: discord.Interaction,
+            error: app_commands.AppCommandError):
+        """
+        Error handler for insert_new_field_before command.
+        Currently only handles CommandOnCooldown error, where the user tried to use the command before the cooldown is up.
+        """
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message('Command is on cooldown. Please try again later.',
+                                                    ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
