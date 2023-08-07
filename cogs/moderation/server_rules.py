@@ -1746,6 +1746,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                                     ephemeral=True)
     # TODO: check if I spelled color or colour
     # TODO: make a write_to_csv function
+    # TODO: let all success message include a button to the rules message:
 
     # TODO: ANY EDITS TO THE RULES WILL ADD FOOTER OF WHO EDITED AND WHEN AND TIMEZONE
     # TODO: AUTHOR WILL ALWAYS BE THE BOT
