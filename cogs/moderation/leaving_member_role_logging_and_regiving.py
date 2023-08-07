@@ -50,7 +50,7 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
             next(reader)
             for row in reader:
                 # This way of storing the data will overwrite older entries about the same user
-                self.users_ids_roles_ids[int(row[0])] = [int(role_id) for role_id in row[1].split(',')]
+                self.users_ids_roles_ids[int(row[0])] = [int(role_id) for role_id in row[1].split(',')] if len(row[1]) > 0 else []
         await self.bot.log(
             cog=self,
             user=None,
