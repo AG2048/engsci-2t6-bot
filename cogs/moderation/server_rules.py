@@ -576,13 +576,24 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         await message.edit(content=message.content, embeds=message.embeds + [new_embed])
 
-        # Write to csv file the new embed message (append should be fine).
-        with open(self.server_rules_csv_full_path, 'a', newline='') as csvfile:
+        # Write to file any changes
+        # Any None values are converted to empty strings
+        with open(self.server_rules_csv_full_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
-            writer.writerow(['embed_title', name])
-            writer.writerow(['embed_description', description if description else ''])
-            writer.writerow(['embed_thumbnail_url', ''])
-            writer.writerow(['embed_colour', ''])
+            writer.writerow(['value_name', 'value'])
+            writer.writerow(['channel_id', self.server_rule_channel_id])
+            writer.writerow(['message_id', self.server_rule_message_id])
+            writer.writerow(['message_content', self.server_rule_message_content])
+            for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                writer.writerow(['embed_title', embed_info_dict['title'] if embed_info_dict['title'] else ''])
+                writer.writerow(
+                    ['embed_description', embed_info_dict['description'] if embed_info_dict['description'] else ''])
+                writer.writerow(['embed_thumbnail_url',
+                                 embed_info_dict['thumbnail_url'] if embed_info_dict['thumbnail_url'] else ''])
+                writer.writerow(['embed_colour', embed_info_dict['colour'] if embed_info_dict['colour'] else ''])
+                for field in embed_info_dict['fields']:
+                    writer.writerow(['embed_field_name', field['name'] if field['name'] else ''])
+                    writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the new ruleset has been added.
         await interaction.response.send_message('New ruleset added.', ephemeral=True)
@@ -749,7 +760,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
     #     Takes input a type of addition DIFFERENT COMMANDS UNDER ONE GROUP /server_rules ...
     #     Ordering the commands:
     #       add_new:
-    #           --ruleset--, field
+    #           --ruleset--, --field--
     #       insert_new_before:
     #           ruleset, field
     #       edit:
