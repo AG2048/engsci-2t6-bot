@@ -33,8 +33,16 @@ class Bot(commands.Bot):
         await bot.tree.sync(guild=discord.Object(id=SERVER_ID))
 
     async def on_ready(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
-        print('------')
+        log_message = str(datetime.datetime.now())
+        embed = discord.Embed()
+        embed.title = f'{self.user.name}{("#" + self.user.discriminator) if len(self.user.discriminator) > 1 else ""} (ID: {self.user.id})'
+        log_message += f'\n\t {self.user.name}{("#" + self.user.discriminator) if len(self.user.discriminator) > 1 else ""} (ID: {self.user.id})'
+        embed.timestamp = datetime.datetime.now()
+        embed.set_author(name=self.user.name, icon_url=self.user.avatar.url)
+        embed.description = 'Bot is ready.'
+        log_message += '\n\t Bot is ready.'
+        await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
+        print(log_message)
 
     async def log(
             self,
