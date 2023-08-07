@@ -9,6 +9,99 @@ This repository houses the development of an upcoming Discord bot for the UofT E
   - ["Fun" Functions](#fun-functions)
 - [Cogs](#cogs)
 
+# Completed Functionalities
+## Moderation:
+Any functionality that is related to moderation of the server.
+### Server Rules:
+`cogs/moderation/server_rules.py`
+
+This cog is responsible for the server rules. It allows users to display specific server rules, and allows the admins to set, add, remove, and edit rules.
+
+**All commands are under the `/rules` command group**
+
+The server rules are stored in a csv file in the `data/moderation` directory. The csv file has the following structure:
+```csv
+value_name,value
+channel_id,<ID OF SERVER RULE MESSAGE'S CHANNEL>
+message_id,<ID OF SERVER RULE MESSAGE>
+message_content,<CONTENT OF SERVER RULE MESSAGE>
+embed_title,<TITLE OF SERVER RULE MESSAGE>
+embed_description,<DESCRIPTION OF SERVER RULE MESSAGE>
+embed_thumbnail_url,<URL OF SERVER RULE MESSAGE'S THUMBNAIL | LEAVE BLANK FOR NO THUMBNAIL>
+embed_colour,<HEX STRING OF COLOUR OF SERVER RULE MESSAGE'S EMBED | LEAVE BLANK FOR COLOUR NONE>
+embed_field_name,<NAME OF EMBED FIELD>
+embed_field_value,<VALUE OF EMBED FIELD>
+<THERE CAN BE MULTIPLE EMBED FIELDS PER EMBED>
+<THERE CAN BE MULTIPLE EMBEDS>
+```
+The only values in the file that can be empty are `channel_id`, `message_id`, `embed_thumbnail_url`, and `embed_colour`. 
+All other values must be filled in, or being read as `'none'` when reading the csv file. Although the current code stores all empty values / `None` values as `''` (it will be read as `'none'` when reading from the csv file), also all command inputs has the default value of `variable: str = 'none'`.
+
+Specific commands are as follows:
+- `set_rules_to_existing_message`
+  - Sets the server rules to an existing message that is sent by the bot (so that the bot can edit the message).
+  - There are two set actions: 
+    - One sets this new message's content as the rule content as well.
+    - One overrides this new message's content and edits this message to be the rule content stored in the bot or in the csv file. 
+- `create_new_rules_message`
+  - Creates a new message with the server rules.
+  - There are two create actions:
+    - One creates a new message with no embeds and just one line of text.
+    - One creates a new message with the rule content stored in the bot or in the csv file.
+- `get_link`
+  - Gets the link to the server rules message.
+- `add_new_ruleset`
+  - Adds a new ruleset (a new embed) to the end of server rules message's embeds.
+- `add_new_field`
+  - Adds a new field to a ruleset (an embed) to the end of the ruleset's (the embed's) fields.
+- `insert_new_ruleset_before`
+  - Inserts a new ruleset (a new embed) before a specified ruleset (embed).
+- `insert_new_field_before`
+  - Inserts a new field before a specified field in a specified ruleset (embed).
+- `edit_ruleset_thumbnail`
+  - Edits the thumbnail of a specified ruleset (embed). Can also remove the thumbnail.
+- `edit_ruleset_title`
+  - Edits the title of a specified ruleset (embed).
+- `edit_ruleset_description`
+  - Edits the description of a specified ruleset (embed).
+- `edit_ruleset_colour`
+  - Edits the colour of a specified ruleset (embed). Can also remove the colour.
+- `edit_message_content`
+  - Edits the content of the server rules message.
+- `edit_field`
+  - Edits the name and value of a specified field in a specified ruleset (embed).
+- `remove_ruleset`
+  - Removes a specified ruleset (embed).
+- `remove_field`
+  - Removes a specified field in a specified ruleset (embed).
+- `display_rule`
+  - Displays a specified rule (field in a ruleset/embed) in the server rules message.
+  - This message disappears after 5 minutes.
+
+Only `get_link` and `display_rule` are available to everyone. All other commands are only available to admins.
+
+Few notable things:
+- The user specifies the ruleset (embed) and field by `@app_commands.autocomplete` where the autocomplete selections includes the name and the index of the ruleset (embed) and/or field. A check is done to ensure that the user is selecting a valid ruleset (embed) and/or field.
+- We write to file after every change to the server rules message. This is to ensure that the server rules message is always up to date. This is also to ensure that if the bot goes down, the server rules message can be restored to its last state.
+- The cog always log the server rules before any changes are about to happen to the rules. This displays who made the change to the server rules message and when. The only exception is when the server rules message is creating a new rule message from stored content. This is because the server rules message is not changed in this case.
+- The cog always display the last user who edited the server rules message and when. 
+
+### Leaving Member Role Logging and Re-Giving:
+`cogs/moderation/leaving_member_role_logging.py`
+
+This cog is responsible for remembering all the roles a user has before they leave the server. When they rejoin the server, the bot will give them back all the roles they had before they left.
+
+The purpose of this cog is to prevent users with "penalty roles" from clearing their penalty roles by leaving and rejoining the server.
+
+All roles are stored in a csv file with the following structure:
+```csv
+user_id,role_ids
+<USER ID>,"<ROLE ID 1>,<ROLE ID 2>,<ROLE ID 3>,..."
+```
+One thing to keep in mind is to not store the `@everyone` role in the csv file. This is because the bot will attempt to give back the `@everyone` role to the user when they rejoin the server, which is impossible and cause the bot to raise an error.
+
+We also just keep appending to the csv file, and when we read the csv file, just let the later entries of the same user override the earlier ones.
+
 # Contributing
 The `main.py` file, which defines the main bot, is the only file that will be running on the server.
 
