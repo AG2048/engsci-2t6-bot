@@ -323,7 +323,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                         embed.add_field(name=field['name'], value=field['value'], inline=False)
                     embed.set_footer(
                         # This tells us who updated the rules and when
-                        text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                        text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
                     embed.timestamp = datetime.datetime.now()
                     previous_rules_embeds.append(embed)
                 log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -386,7 +386,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 for field in embed_info_dict['fields']:
                     embed.add_field(name=field['name'], value=field['value'], inline=False)
                 # This tells us who updated the rules and when
-                embed.set_footer(text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                embed.set_footer(text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
                 embed.timestamp = datetime.datetime.now()
                 embeds.append(embed)
             # Update the message
@@ -492,7 +492,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                         embed.add_field(name=field['name'], value=field['value'], inline=False)
                     embed.set_footer(
                         # This tells us who updated the rules and when
-                        text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                        text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
                     embed.timestamp = datetime.datetime.now()
                     previous_rules_embeds.append(embed)
                 log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -533,7 +533,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict['colour'] else None
                 for field in embed_info_dict['fields']:
                     embed.add_field(name=field['name'], value=field['value'], inline=False)
-                embed.set_footer(text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                embed.set_footer(text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
                 embed.timestamp = datetime.datetime.now()
                 embeds.append(embed)
             message = await channel.send(content=self.server_rule_message_content, embeds=embeds)
@@ -700,7 +700,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         new_embed = discord.Embed(title=name, description=description)
         new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
         new_embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         new_embed.timestamp = datetime.datetime.now()
 
         embeds = message.embeds
@@ -731,7 +731,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -889,7 +889,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.add_field(name=field_name, value=field_value, inline=False)
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -920,7 +920,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -1066,7 +1066,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         new_embed = discord.Embed(title=name, description=description)
         new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
         new_embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         new_embed.timestamp = datetime.datetime.now()
 
         # Insert new embed to message
@@ -1101,7 +1101,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -1266,7 +1266,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.insert_field_at(field_index, name=field_name, value=field_value, inline=False)
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -1297,7 +1297,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -1444,7 +1444,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.set_thumbnail(url=thumbnail_url)
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -1489,7 +1489,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -1629,7 +1629,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.title = new_title
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -1660,7 +1660,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -1803,7 +1803,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.description = new_description
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -1834,7 +1834,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -1988,7 +1988,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.colour = colour
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -2019,7 +2019,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -2165,7 +2165,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -2316,7 +2316,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.set_field_at(field_index, name=new_field_name, value=new_field_value, inline=False)
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -2347,7 +2347,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -2503,7 +2503,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -2650,7 +2650,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         embed = embeds[ruleset_index]
         embed.remove_field(field_index)
         embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
         if embed_surpassed_limit(embeds):
@@ -2681,7 +2681,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
                 # This tells us who updated the rules and when
-                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
             embed.timestamp = datetime.datetime.now()
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
@@ -2829,7 +2829,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         display_embed.set_thumbnail(url=embed.thumbnail.url)
         display_embed.colour = embed.colour
         display_embed.add_field(name=embed.fields[field_index].name, value=embed.fields[field_index].value, inline=False)
-        display_embed.set_footer(text=f'Rule display should disappear after 2 minutes at ({(datetime.datetime.now()+datetime.timedelta(minutes=2)).astimezone().tzinfo.tzname((datetime.datetime.now()+datetime.timedelta(minutes=2)).astimezone())})')
+        display_embed.set_footer(text=f'Rule display should disappear after 2 minutes: ({(datetime.datetime.now()+datetime.timedelta(minutes=2)).astimezone().tzinfo.tzname((datetime.datetime.now()+datetime.timedelta(minutes=2)).astimezone())})')
         display_embed.timestamp = datetime.datetime.now()+datetime.timedelta(minutes=2)
 
         # Send a message to the user saying that the field has been edited.
