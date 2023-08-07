@@ -2749,7 +2749,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='display_rule',
-        description='Display a rule from the server rules message for 5 minutes.')
+        description='Display a rule from the server rules message for 2 minutes.')
     @app_commands.describe(
         rule_name='The ruleset and title of the rule to display.')
     @app_commands.autocomplete(rule_name=fields_autocomplete)
@@ -2760,7 +2760,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             interaction: discord.Interaction,
             rule_name: str) -> None:
         """
-        Display the chosen rule for 5 minutes.
+        Display the chosen rule for 2 minutes.
         Display embed includes:
             Author, thumbnail, Colour, Title, Field, Footnote
 
@@ -2829,13 +2829,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         display_embed.set_thumbnail(url=embed.thumbnail.url)
         display_embed.colour = embed.colour
         display_embed.add_field(name=embed.fields[field_index].name, value=embed.fields[field_index].value, inline=False)
-        display_embed.set_footer(text=f'Rule display should disappear after 5 minutes at ({(datetime.datetime.now()+datetime.timedelta(minutes=5)).astimezone().tzinfo.tzname((datetime.datetime.now()+datetime.timedelta(minutes=5)).astimezone())})')
-        display_embed.timestamp = datetime.datetime.now()+datetime.timedelta(minutes=5)
+        display_embed.set_footer(text=f'Rule display should disappear after 2 minutes at ({(datetime.datetime.now()+datetime.timedelta(minutes=2)).astimezone().tzinfo.tzname((datetime.datetime.now()+datetime.timedelta(minutes=2)).astimezone())})')
+        display_embed.timestamp = datetime.datetime.now()+datetime.timedelta(minutes=2)
 
         # Send a message to the user saying that the field has been edited.
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Rules Message', style=discord.ButtonStyle.url, url=message.jump_url))
-        await interaction.response.send_message(embed=display_embed, view=url_view, delete_after=300)
+        await interaction.response.send_message(embed=display_embed, view=url_view, delete_after=120)
         await self.bot.log(
             cog=self,
             user=interaction.user,
