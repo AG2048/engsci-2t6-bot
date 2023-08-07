@@ -14,6 +14,47 @@ SERVER_ID = int(os.getenv('SERVER_ID'))
 ADMINISTRATION_ROLES_IDS = [int(role_id) for role_id in os.getenv('ADMINISTRATION_ROLES_IDS').split(',')]
 LOG_CHANNEL_ID = int(os.getenv('LOG_CHANNEL_ID'))
 
+
+def embed_surpassed_limit(embeds: List[discord.Embed]) -> bool:
+    """
+    Embed titles are limited to 256 characters
+    Embed descriptions are limited to 4096 characters
+    There can be up to 25 fields
+    A field's name is limited to 256 characters and its value to 1024 characters
+    The footer text is limited to 2048 characters
+    The author name is limited to 256 characters
+    The sum of all characters from all embed structures in a message must not exceed 6000 characters
+    10 embeds can be sent per message
+
+    return True if the embeds surpass the limit
+    """
+    sum_characters = 0
+    if len(embeds) > 10:
+        return True
+    for embed in embeds:
+        if len(embed.title) > 256:
+            return True
+        if len(embed.description) > 4096:
+            return True
+        if len(embed.fields) > 25:
+            return True
+        for field in embed.fields:
+            sum_characters += len(field.name) + len(field.value)
+            if len(field.name) > 256:
+                return True
+            if len(field.value) > 1024:
+                return True
+        if len(embed.footer.text) > 2048:
+            return True
+        if len(embed.author.name) > 256:
+            return True
+        sum_characters += len(embed.title) + len(embed.description) + len(embed.footer.text) + len(embed.author.name)
+    if sum_characters > 6000:
+        return True
+    return False
+
+
+
 class ServerRulesCog(commands.GroupCog, name='rules'):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -515,8 +556,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         Check if the server has rules, if not, send a message saying that the server does not have rules.
         Check if server rules message still exists, if not, send a message saying that.
+        Set up a new embed with title = name and description = description.
+        Check if embeds are too long, if so, send a message saying that.
         Log previous embeds.
-        Set up a new embed message with title = name and description = description.
         Load new embed to memory.
         Edit the server rules message to append the new embed message to the end of embeds.
         Write to csv file the new embed message.
@@ -534,6 +576,20 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
             self.server_has_rule = False
+            return
+
+        # Set up a new embed message with title = name and description = description.
+        new_embed = discord.Embed(title=name, description=description)
+        new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+        new_embed.set_footer(
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+        new_embed.timestamp = datetime.datetime.now()
+
+        embeds = message.embeds
+        embeds.append(new_embed)
+
+        if embed_surpassed_limit(embeds):
+            await interaction.response.send_message('Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.', ephemeral=True)
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -558,13 +614,6 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
                                embeds=previous_rules_embeds)
 
-        # Set up a new embed message with title = name and description = description.
-        new_embed = discord.Embed(title=name, description=description)
-        new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
-        new_embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
-        new_embed.timestamp = datetime.datetime.now()
-
         # Load new embed to memory.
         self.server_rule_message_embeds_info_dict_list.append({
             'title': name,
@@ -574,7 +623,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             'fields': []
         })
 
-        await message.edit(content=message.content, embeds=message.embeds + [new_embed])
+        await message.edit(content=message.content, embeds=embeds)
 
         # Write to file any changes
         # Any None values are converted to empty strings
@@ -644,11 +693,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         Check if the server has rules, if not, send a message saying that the server does not have rules.
         Check if server rules message still exists, if not, send a message saying that.
-        Log previous embeds.
         ruleset_title lets user choose which ruleset to add the field to
         convert ruleset_title to ruleset_index
         Access the ruleset embed from the index from memory.
         add_field to the ruleset embed.
+        Check if the ruleset embed is too long, if so, send a message saying that the ruleset embed is too long.
+        Log previous embeds.
+        Load the ruleset embed to memory.
         Edit the server rules message to replace the old ruleset embed with the new ruleset embed.
         Write to csv file. Since this could be in the middle of the file, we need to write the whole ruleset again.
         """
@@ -671,6 +722,21 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             self.server_has_rule = False
             return
 
+        # Set up a new array of embeds, replacing the old embed with the new embed.
+        embeds = message.embeds
+        for i, embed in enumerate(embeds):
+            if i == ruleset_index:
+                embed.add_field(name=field_name, value=field_value, inline=False)
+                embed.set_footer(
+                    text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                embed.timestamp = datetime.datetime.now()
+
+        if embed_surpassed_limit(embeds):
+            await interaction.response.send_message(
+                'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
+                ephemeral=True)
+            return
+
         # Log previous rules message in the log channel, only if the server previously has rules
         previous_rules_embeds = []
         for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
@@ -680,7 +746,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             embed.description = embed_info_dict['description']
             embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
             # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
-            embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict['colour'] else None
+            embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict[
+                'colour'] else None
             for field in embed_info_dict['fields']:
                 embed.add_field(name=field['name'], value=field['value'], inline=False)
             embed.set_footer(
@@ -699,14 +766,6 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             'name': field_name,
             'value': field_value
         })
-        # Set up a new array of embeds, replacing the old embed with the new embed.
-        embeds = message.embeds
-        for i, embed in enumerate(embeds):
-            if i == ruleset_index:
-                embed.add_field(name=field_name, value=field_value, inline=False)
-                embed.set_footer(
-                    text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
-                embed.timestamp = datetime.datetime.now()
 
         # Edit the server rules message with the new embed message.
         await message.edit(content=message.content, embeds=embeds)
@@ -769,10 +828,11 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         Check if the server has rules, if not, send a message saying that the server does not have rules.
         Check if server rules message still exists, if not, send a message saying that.
-        Log previous embeds.
         ruleset_title lets user choose which ruleset to add the field to
         convert ruleset_title to ruleset_index
         Set up a new embed message with title = name and description = description.
+        Check if the ruleset embed is too long, if so, send a message saying that the ruleset embed is too long.
+        Log previous embeds.
         Insert new embed to memory.
         Edit the server rules message to insert the new embed message to index ruleset_index.
         Write to csv file the new embed message.
@@ -797,6 +857,24 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             self.server_has_rule = False
             return
 
+        # Set up a new embed message with title = name and description = description.
+        new_embed = discord.Embed(title=name, description=description)
+        new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+        new_embed.set_footer(
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+        new_embed.timestamp = datetime.datetime.now()
+
+        # Insert new embed to message
+        embeds = message.embeds
+        embeds.insert(ruleset_index, new_embed)
+
+        # Check if the ruleset embed is too long, if so, send a message saying that the ruleset embed is too long.
+        if embed_surpassed_limit(embeds):
+            await interaction.response.send_message(
+                'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
+                ephemeral=True)
+            return
+
         # Log previous rules message in the log channel, only if the server previously has rules
         previous_rules_embeds = []
         for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
@@ -819,13 +897,6 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
                                embeds=previous_rules_embeds)
 
-        # Set up a new embed message with title = name and description = description.
-        new_embed = discord.Embed(title=name, description=description)
-        new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
-        new_embed.set_footer(
-            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
-        new_embed.timestamp = datetime.datetime.now()
-
         # Insert new embed to memory.
         self.server_rule_message_embeds_info_dict_list.insert(ruleset_index, {
             'title': name,
@@ -834,10 +905,6 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             'colour': None,
             'fields': []
         })
-
-        # Insert new embed to message
-        embeds = message.embeds
-        embeds.insert(ruleset_index, new_embed)
 
         # Edit the server rules message with the new embed message.
         await message.edit(content=message.content, embeds=embeds)
