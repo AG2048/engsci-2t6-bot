@@ -328,7 +328,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     })
                 self.server_rule_message_embeds_info_dict_list.append(embed_info_dict)
             # Send success message
-            await interaction.response.send_message('Server rules set to this message (using this message as new rules).', ephemeral=True)
+            url_view = discord.ui.View()
+            url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+            await interaction.response.send_message('Server rules set to this message (using this message as new rules).', ephemeral=True, view=url_view)
 
         elif set_action == 'overwrite':
             # If set_action is 'overwrite', overwrite the message with the server rules message
@@ -356,7 +358,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             # Update the message
             await message.edit(content=self.server_rule_message_content, embeds=embeds)
             # Send success message
-            await interaction.response.send_message('Server rules set to this message (overwritten from stored rules).', ephemeral=True)
+            url_view = discord.ui.View()
+            url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+            await interaction.response.send_message('Server rules set to this message (overwritten from stored rules).', ephemeral=True, view=url_view)
 
         # Write to file any changes
         # Any None values are converted to empty strings
@@ -456,7 +460,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             self.server_rule_message_content = message.content
             self.server_rule_message_embeds_info_dict_list = []
             # Send success message
-            await interaction.response.send_message('Server rules set to a newly-sent blank message.', ephemeral=True)
+            url_view = discord.ui.View()
+            url_view.add_item(
+                discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+            await interaction.response.send_message('Server rules set to a newly-sent blank message.', ephemeral=True, view=url_view)
         elif create_action == 'stored_rules':
             # If create_action is 'stored_rules', create a message with the stored rules
             self.server_has_rule = True
@@ -480,7 +487,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             self.server_rule_channel_id = channel.id
             self.server_rule_message_id = message.id
             # Send success message
-            await interaction.response.send_message('Server rules set to a newly-sent message (from stored rules).', ephemeral=True)
+            url_view = discord.ui.View()
+            url_view.add_item(
+                discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+            await interaction.response.send_message('Server rules set to a newly-sent message (from stored rules).', ephemeral=True, view=url_view)
 
         # Write to file any changes
         # Any None values are converted to empty strings
@@ -532,7 +542,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             try:
                 channel = self.bot.get_channel(self.server_rule_channel_id)
                 message = await channel.fetch_message(self.server_rule_message_id)
-                await interaction.response.send_message(message.jump_url, ephemeral=True)
+                url_view = discord.ui.View()
+                url_view.add_item(
+                    discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+                await interaction.response.send_message(message.jump_url, ephemeral=True, view=url_view)
             except discord.errors.NotFound:
                 await interaction.response.send_message('Server rules message not found.', ephemeral=True)
                 self.server_has_rule = False
@@ -646,7 +659,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the new ruleset has been added.
-        await interaction.response.send_message('New ruleset added.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('New ruleset added.', ephemeral=True, view=url_view)
 
     @add_new_ruleset.error
     async def add_new_rulesetError(
@@ -791,7 +806,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the new field has been added.
-        await interaction.response.send_message('New field added.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('New field added.', ephemeral=True, view=url_view)
 
     @add_new_field.error
     async def add_new_fieldError(
@@ -930,7 +947,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the new ruleset has been inserted.
-        await interaction.response.send_message('New ruleset inserted.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('New ruleset inserted.', ephemeral=True, view=url_view)
 
     @insert_new_ruleset_before.error
     async def insert_new_ruleset_beforeError(
@@ -1082,7 +1101,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the new field has been inserted.
-        await interaction.response.send_message('New field inserted.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('New field inserted.', ephemeral=True, view=url_view)
 
     @insert_new_field_before.error
     async def insert_new_field_beforeError(
@@ -1218,7 +1239,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the thumbnail has been updated.
-        await interaction.response.send_message('Thumbnail updated.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('Thumbnail updated.', ephemeral=True, view=url_view)
 
     @edit_ruleset_thumbnail.error
     async def edit_ruleset_thumbnailError(
@@ -1349,7 +1372,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the title has been updated.
-        await interaction.response.send_message('Title updated.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('Title updated.', ephemeral=True, view=url_view)
 
     @edit_ruleset_title.error
     async def edit_ruleset_titleError(
@@ -1480,7 +1505,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the description has been updated.
-        await interaction.response.send_message('Description updated.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('Description updated.', ephemeral=True, view=url_view)
 
     @edit_ruleset_description.error
     async def edit_ruleset_descriptionError(
@@ -1622,7 +1649,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the colour have been updated.
-        await interaction.response.send_message('Colour updated.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('Colour updated.', ephemeral=True, view=url_view)
 
     @edit_ruleset_colour.error
     async def edit_ruleset_colourError(
@@ -1730,7 +1759,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
 
         # Send a message to the user saying that the message content have been updated.
-        await interaction.response.send_message('Server rules message content updated.', ephemeral=True)
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('Server rules message content updated.', ephemeral=True, view=url_view)
 
     @edit_message_content.error
     async def edit_message_contentError(
