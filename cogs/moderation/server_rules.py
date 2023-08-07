@@ -54,6 +54,47 @@ def embed_surpassed_limit(embeds: List[discord.Embed]) -> bool:
     return False
 
 
+colour_dict = {
+    'blue': discord.Colour.blue(),
+    'blurple': discord.Colour.blurple(),
+    'brand_green': discord.Colour.brand_green(),
+    'brand_red': discord.Colour.brand_red(),
+    'dark_blue': discord.Colour.dark_blue(),
+    'dark_embed': discord.Colour.dark_embed(),
+    'dark_gold': discord.Colour.dark_gold(),
+    'dark_gray': discord.Colour.dark_gray(),
+    'dark_green': discord.Colour.dark_green(),
+    'dark_grey': discord.Colour.dark_grey(),
+    'dark_magenta': discord.Colour.dark_magenta(),
+    'dark_orange': discord.Colour.dark_orange(),
+    'dark_purple': discord.Colour.dark_purple(),
+    'dark_red': discord.Colour.dark_red(),
+    'dark_teal': discord.Colour.dark_teal(),
+    'dark_theme': discord.Colour.dark_theme(),
+    'darker_gray': discord.Colour.darker_gray(),
+    'darker_grey': discord.Colour.darker_grey(),
+    'default': discord.Colour.default(),
+    'fuchsia': discord.Colour.fuchsia(),
+    'gold': discord.Colour.gold(),
+    'green': discord.Colour.green(),
+    'greyple': discord.Colour.greyple(),
+    'light_embed': discord.Colour.light_embed(),
+    'light_gray': discord.Colour.light_gray(),
+    'light_grey': discord.Colour.light_grey(),
+    'lighter_gray': discord.Colour.lighter_gray(),
+    'lighter_grey': discord.Colour.lighter_grey(),
+    'magenta': discord.Colour.magenta(),
+    'og_blurple': discord.Colour.blurple(),
+    'orange': discord.Colour.orange(),
+    'pink': discord.Colour.pink(),
+    'purple': discord.Colour.purple(),
+    'random': discord.Colour.random(),
+    'red': discord.Colour.red(),
+    'teal': discord.Colour.teal(),
+    'yellow': discord.Colour.yellow(),
+    'none': None
+}
+
 
 class ServerRulesCog(commands.GroupCog, name='rules'):
     def __init__(self, bot: commands.Bot):
@@ -66,46 +107,6 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         self.server_rule_message_id = None
         self.server_rule_message_content = 'none'
         self.server_rule_message_embeds_info_dict_list = []
-        self.colour_dict = {
-            'blue': discord.Colour.blue(),
-            'blurple': discord.Colour.blurple(),
-            'brand_green': discord.Colour.brand_green(),
-            'brand_red': discord.Colour.brand_red(),
-            'dark_blue': discord.Colour.dark_blue(),
-            'dark_embed': discord.Colour.dark_embed(),
-            'dark_gold': discord.Colour.dark_gold(),
-            'dark_gray': discord.Colour.dark_gray(),
-            'dark_green': discord.Colour.dark_green(),
-            'dark_grey': discord.Colour.dark_grey(),
-            'dark_magenta': discord.Colour.dark_magenta(),
-            'dark_orange': discord.Colour.dark_orange(),
-            'dark_purple': discord.Colour.dark_purple(),
-            'dark_red': discord.Colour.dark_red(),
-            'dark_teal': discord.Colour.dark_teal(),
-            'dark_theme': discord.Colour.dark_theme(),
-            'darker_gray': discord.Colour.darker_gray(),
-            'darker_grey': discord.Colour.darker_grey(),
-            'default': discord.Colour.default(),
-            'fuchsia': discord.Colour.fuchsia(),
-            'gold': discord.Colour.gold(),
-            'green': discord.Colour.green(),
-            'greyple': discord.Colour.greyple(),
-            'light_embed': discord.Colour.light_embed(),
-            'light_gray': discord.Colour.light_gray(),
-            'light_grey': discord.Colour.light_grey(),
-            'lighter_gray': discord.Colour.lighter_gray(),
-            'lighter_grey': discord.Colour.lighter_grey(),
-            'magenta': discord.Colour.magenta(),
-            'og_blurple': discord.Colour.blurple(),
-            'orange': discord.Colour.orange(),
-            'pink': discord.Colour.pink(),
-            'purple': discord.Colour.purple(),
-            'random': discord.Colour.random(),
-            'red': discord.Colour.red(),
-            'teal': discord.Colour.teal(),
-            'yellow': discord.Colour.yellow(),
-            'none': None
-        }
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -1493,6 +1494,148 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+
+    @app_commands.command(
+        name='edit_ruleset_colour',
+        description='Edit the colour of a ruleset embed.')
+    @app_commands.describe(
+        ruleset_title='The name of the ruleset.',
+        new_colour_1='(Fill ONLY ONE VALUE) (1/2) The new colour of the ruleset.',
+        new_colour_2='(Fill ONLY ONE VALUE) (2/2) The new colour of the ruleset.')
+    @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
+    @app_commands.choices(
+        new_colour_1=[Choice(name=colour, value=colour) for colour in list(colour_dict.keys())[:len(colour_dict.keys()) // 2]],
+        new_colour_2=[Choice(name=colour, value=colour) for colour in list(colour_dict.keys())[len(colour_dict.keys()) // 2:]])
+    @app_commands.guilds(SERVER_ID)
+    @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
+    async def edit_ruleset_colour(
+            self,
+            interaction: discord.Interaction,
+            ruleset_title: str,
+            new_colour_1: Optional[str] = None,
+            new_colour_2: Optional[str] = None) -> None:
+        """
+        Edit the description of a ruleset embed.
+        This command can be used only if the server already has rules.
+        title cannot be None
+
+        Check if the server has rules, if not, send a message saying that the server does not have rules.
+        Check if server rules message still exists, if not, send a message saying that.
+        ruleset_title lets user choose which ruleset to add the field to
+        convert ruleset_title to ruleset_index
+        Access the ruleset embed from the index from message.embeds.
+        embed.description = new_description
+        Check if the ruleset embed is too long, if so, send a message saying that the ruleset embed is too long.
+        Log previous embeds.
+        Load the ruleset embed to memory.
+        Edit the server rules message to replace the old ruleset embed with the new ruleset embed.
+        Write to csv file. Since this could be in the middle of the file, we need to write the whole ruleset again.
+        """
+        if new_colour_1:
+            colour = colour_dict[new_colour_1]
+        elif new_colour_2:
+            colour = colour_dict[new_colour_2]
+        else:
+            colour = None
+        possible_ruleset_titles = [f"{embed_info_dict['title']} - {i}" for i, embed_info_dict in
+                                   enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
+        if ruleset_title not in possible_ruleset_titles:
+            await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            return
+        ruleset_index = possible_ruleset_titles.index(ruleset_title)
+        # Check if the server has rules, if not, send a message saying that the server does not have rules.
+        if not self.server_has_rule:
+            await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
+                                                    ephemeral=True)
+            return
+
+        try:
+            channel = self.bot.get_channel(self.server_rule_channel_id)
+            message = await channel.fetch_message(self.server_rule_message_id)
+        except discord.errors.NotFound:
+            await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            self.server_has_rule = False
+            return
+
+        # Set up a new array of embeds, replacing the old embed with the new embed.
+        embeds = message.embeds
+        for i, embed in enumerate(embeds):
+            if i == ruleset_index:
+                embed.colour = colour
+                embed.set_footer(
+                    text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+                embed.timestamp = datetime.datetime.now()
+
+        if embed_surpassed_limit(embeds):
+            await interaction.response.send_message(
+                'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
+                ephemeral=True)
+            return
+
+        # Log previous rules message in the log channel, only if the server previously has rules
+        previous_rules_embeds = []
+        for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+            embed = discord.Embed()
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+            embed.title = embed_info_dict['title']
+            embed.description = embed_info_dict['description']
+            embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
+            # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
+            embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict[
+                'colour'] else None
+            for field in embed_info_dict['fields']:
+                embed.add_field(name=field['name'], value=field['value'], inline=False)
+            embed.set_footer(
+                # This tells us who updated the rules and when
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            embed.timestamp = datetime.datetime.now()
+            previous_rules_embeds.append(embed)
+        log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
+        # Send log message, mention it is a rule change.
+        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
+                               embeds=previous_rules_embeds)
+
+        # Load new embed_field to memory.
+        editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
+        editing_embed['colour'] = hex(colour.value)
+
+        # Edit the server rules message with the new embed message.
+        await message.edit(content=message.content, embeds=embeds)
+
+        # Write to file any changes
+        # Any None values are converted to empty strings
+        with open(self.server_rules_csv_full_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=',')
+            writer.writerow(['value_name', 'value'])
+            writer.writerow(['channel_id', self.server_rule_channel_id])
+            writer.writerow(['message_id', self.server_rule_message_id])
+            writer.writerow(['message_content', self.server_rule_message_content])
+            for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                writer.writerow(['embed_title', embed_info_dict['title'] if embed_info_dict['title'] else ''])
+                writer.writerow(
+                    ['embed_description', embed_info_dict['description'] if embed_info_dict['description'] else ''])
+                writer.writerow(['embed_thumbnail_url',
+                                 embed_info_dict['thumbnail_url'] if embed_info_dict['thumbnail_url'] else ''])
+                writer.writerow(['embed_colour', embed_info_dict['colour'] if embed_info_dict['colour'] else ''])
+                for field in embed_info_dict['fields']:
+                    writer.writerow(['embed_field_name', field['name'] if field['name'] else ''])
+                    writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
+
+        # Send a message to the user saying that the colour have been updated.
+        await interaction.response.send_message('Colour updated.', ephemeral=True)
+
+    @edit_ruleset_colour.error
+    async def edit_ruleset_colourError(
+            self,
+            interaction: discord.Interaction,
+            error: app_commands.AppCommandError):
+        """
+        Error handler for edit_ruleset_colour command.
+        Currently only handles MissingAnyRole error, where the user does not have any of the required roles.
+        """
+        if isinstance(error, app_commands.MissingAnyRole):
+            await interaction.response.send_message('You need to be an administrator to use this command.',
+                                                    ephemeral=True)
     # TODO: check if I spelled color or colour
     # TODO: make a write_to_csv function
 
@@ -1511,7 +1654,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
     #       insert_new_before:
     #           --ruleset--, --field--
     #       edit:
-    #           --ruleset thumbnail--, --ruleset title--, ruleset description, ruleset colour, field (name and value), message content
+    #           --ruleset thumbnail--, --ruleset title--, --ruleset description--, ruleset colour, field (name and value), message content
     #       remove:
     #           ruleset, (WE DON'T WANT TO REMOVE TITLE) ruleset title, ruleset description, ruleset colour, field
     #     user inputs:
