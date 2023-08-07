@@ -1500,8 +1500,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         description='Edit the colour of a ruleset embed.')
     @app_commands.describe(
         ruleset_title='The name of the ruleset.',
-        new_colour_1='(Fill ONLY ONE VALUE) (1/2) The new colour of the ruleset.',
-        new_colour_2='(Fill ONLY ONE VALUE) (2/2) The new colour of the ruleset.')
+        new_colour_1='(Fill ONLY ONE VALUE) (1/2) Possible new colours of the ruleset.',
+        new_colour_2='(Fill ONLY ONE VALUE) (2/2) Possible new colours of the ruleset.')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.choices(
         new_colour_1=[Choice(name=colour, value=colour) for colour in list(colour_dict.keys())[:len(colour_dict.keys()) // 2]],
@@ -1654,7 +1654,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
     #       insert_new_before:
     #           --ruleset--, --field--
     #       edit:
-    #           --ruleset thumbnail--, --ruleset title--, --ruleset description--, ruleset colour, field (name and value), message content
+    #           --ruleset thumbnail--, --ruleset title--, --ruleset description--, --ruleset colour--, field (name and value), message content
     #       remove:
     #           ruleset, (WE DON'T WANT TO REMOVE TITLE) ruleset title, ruleset description, ruleset colour, field
     #     user inputs:
