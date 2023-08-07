@@ -44,19 +44,40 @@ class Bot(commands.Bot):
             channel: discord.TextChannel = None,
             event: str = None,
             outcome: str = None) -> None:
-        # Who - user
-        # what - event, outcome (or error message)
-        # when - datetime.datetime.now()
-        # where - channel
-        # why - NONE
-        # how - user_action
-        pass
-        # print(f'{type(cog).__name__}: {message}')
-        # embed = discord.Embed(
-        #     title=f'{type(cog).__name__}',
-        #     description=message,
-        #     timestamp=datetime.datetime.now())
-        # await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
+        """
+        Logs an event to the log channel and prints it to the console.
+
+        :param cog: the cog that called this function
+        :param user: the user that triggered the event
+        :param user_action: the action the user took
+        :param channel: the channel the event occurred in
+        :param event: the event that occurred
+        :param outcome: the outcome of the event (only used for user actions or errors)
+        :return: None
+        """
+        log_message = str(datetime.datetime.now())
+        embed = discord.Embed()
+        embed.title = f'{type(cog).__name__}'
+        embed.timestamp = datetime.datetime.now()
+        embed.set_author(name=self.user.name, icon_url=self.user.avatar.url)
+        if user is not None:
+            embed.add_field(name='User: ', value=f'{user.mention} ({user.id})')
+            embed.set_footer(text=f'{user.name}{("#"+user.discriminator) if len(user.discriminator) > 1 else ""} ({user.id})', icon_url=user.avatar.url)
+            log_message += f'\n\t User: {user.name}{("#"+user.discriminator) if len(user.discriminator) > 1 else ""} ({user.id})'
+        if user_action is not None:
+            embed.add_field(name='User Action: ', value=user_action)
+            log_message += f'\n\t User Action: {user_action}'
+        if channel is not None:
+            embed.add_field(name='In Channel: ', value=f'{channel.mention} ({channel.id})')
+            log_message += f'\n\t In Channel: {channel.name} ({channel.id})'
+        if event is not None:
+            embed.add_field(name='Event: ', value=event)
+            log_message += f'\n\t Event: {event}'
+        if outcome is not None:
+            embed.add_field(name='Outcome: ', value=outcome)
+            log_message += f'\n\t Outcome: {outcome}'
+        await self.get_channel(LOG_CHANNEL_ID).send(embed=embed)
+        print(log_message)
 
 
 bot = Bot()

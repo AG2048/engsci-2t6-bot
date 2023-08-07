@@ -216,7 +216,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             except discord.errors.NotFound:
                 # Channel or message does not exist
                 pass
-        print('ServerRulesCog is ready.')
+        await self.bot.log(
+            cog=self,
+            user=None,
+            user_action=None,
+            channel=None,
+            event='ServerRulesCog is ready.',
+            outcome=None)
 
     @app_commands.command(
         name='set_rules_to_existing_message',
@@ -264,6 +270,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message_id = int(message_id)
         except ValueError:
             await interaction.response.send_message('Message ID is not a valid integer.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called set_rules_to_existing_message with parameters: channel={channel}, message_id={message_id}, set_action={set_action}',
+                channel=interaction.channel,
+                event=None,
+                outcome='Message ID is not a valid integer.')
             return
 
         # Check if message exists in the channel
@@ -273,9 +286,23 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             # Check if message is sent by the bot
             if message.author != self.bot.user:
                 await interaction.response.send_message('Message is not sent by the bot.', ephemeral=True)
+                await self.bot.log(
+                    cog=self,
+                    user=interaction.user,
+                    user_action=f'Called set_rules_to_existing_message with parameters: channel={channel}, message_id={message_id}, set_action={set_action}',
+                    channel=interaction.channel,
+                    event=None,
+                    outcome='Message is not sent by the bot.')
                 return
         except discord.errors.NotFound:
             await interaction.response.send_message('Message does not exist in the channel.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called set_rules_to_existing_message with parameters: channel={channel}, message_id={message_id}, set_action={set_action}',
+                channel=interaction.channel,
+                event=None,
+                outcome='Message does not exist in the channel.')
             return
 
         if set_action == 'this_message':
@@ -331,6 +358,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             url_view = discord.ui.View()
             url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
             await interaction.response.send_message('Server rules set to this message (using this message as new rules).', ephemeral=True, view=url_view)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called set_rules_to_existing_message with parameters: channel={channel}, message_id={message_id}, set_action={set_action}',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules set to this message (using this message as new rules).')
 
         elif set_action == 'overwrite':
             # If set_action is 'overwrite', overwrite the message with the server rules message
@@ -361,6 +395,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             url_view = discord.ui.View()
             url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
             await interaction.response.send_message('Server rules set to this message (overwritten from stored rules).', ephemeral=True, view=url_view)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called set_rules_to_existing_message with parameters: channel={channel}, message_id={message_id}, set_action={set_action}',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules set to this message (overwritten from stored rules).')
 
         # Write to file any changes
         # Any None values are converted to empty strings
@@ -392,6 +433,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         """
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called set_rules_to_existing_message',
+                channel=interaction.channel,
+                event=None,
+                outcome='User did not have any of the required roles.')
 
     @app_commands.command(
         name='create_new_rules_message',
@@ -464,6 +512,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             url_view.add_item(
                 discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
             await interaction.response.send_message('Server rules set to a newly-sent blank message.', ephemeral=True, view=url_view)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called create_new_rules_message with parameters: channel={channel}, create_action={create_action}',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules set to a newly-sent blank message.')
         elif create_action == 'stored_rules':
             # If create_action is 'stored_rules', create a message with the stored rules
             self.server_has_rule = True
@@ -491,6 +546,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             url_view.add_item(
                 discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
             await interaction.response.send_message('Server rules set to a newly-sent message (from stored rules).', ephemeral=True, view=url_view)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called create_new_rules_message with parameters: channel={channel}, create_action={create_action}',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules set to a newly-sent message (from stored rules).')
 
         # Write to file any changes
         # Any None values are converted to empty strings
@@ -523,6 +585,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called create_new_rules_message.',
+                channel=interaction.channel,
+                event=None,
+                outcome='User did not have any of the required roles.')
 
     @app_commands.command(
         name='get_link',
@@ -538,6 +607,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         """
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called get_link.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
         else:
             try:
                 channel = self.bot.get_channel(self.server_rule_channel_id)
@@ -546,8 +622,22 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 url_view.add_item(
                     discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
                 await interaction.response.send_message(message.jump_url, ephemeral=True, view=url_view)
+                await self.bot.log(
+                    cog=self,
+                    user=interaction.user,
+                    user_action=f'Called get_link.',
+                    channel=interaction.channel,
+                    event=None,
+                    outcome='Sent link to server rules message.')
             except discord.errors.NotFound:
                 await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+                await self.bot.log(
+                    cog=self,
+                    user=interaction.user,
+                    user_action=f'Called get_link.',
+                    channel=interaction.channel,
+                    event=None,
+                    outcome='Server rules message not found.')
                 self.server_has_rule = False
 
     @app_commands.command(
@@ -581,6 +671,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_ruleset with parameters: name={name}, description={description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         # Edit the server rules message to append the new embed message to the end of embeds.
@@ -589,6 +686,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_ruleset with parameters: name={name}, description={description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -604,6 +708,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         if embed_surpassed_limit(embeds):
             await interaction.response.send_message('Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_ruleset with parameters: name={name}, description={description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters).')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -662,6 +773,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('New ruleset added.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called add_new_ruleset with parameters: name={name}, description={description}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success.')
 
     @add_new_ruleset.error
     async def add_new_rulesetError(
@@ -675,6 +793,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_ruleset.',
+                channel=interaction.channel,
+                event=None,
+                outcome='User does not have any of the required roles.')
 
     async def ruleset_autocomplete(
             self,
@@ -722,12 +847,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         possible_ruleset_titles = [f"{embed_info_dict['title']} - {i}" for i, embed_info_dict in enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
         if ruleset_title not in possible_ruleset_titles:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_field with parameters: ruleset_title={ruleset_title}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = possible_ruleset_titles.index(ruleset_title)
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_field with parameters: ruleset_title={ruleset_title}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -735,6 +874,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_field with parameters: ruleset_title={ruleset_title}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -750,6 +896,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_field with parameters: ruleset_title={ruleset_title}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -808,6 +961,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('New field added.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called add_new_field with parameters: ruleset_title={ruleset_title}, field_name={field_name}, field_value={field_value}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success')
 
     @add_new_field.error
     async def add_new_fieldError(
@@ -821,6 +981,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called add_new_field.',
+                channel=interaction.channel,
+                event=None,
+                outcome='User does not have any of the required roles.')
 
     @app_commands.command(
         name='insert_new_ruleset_before',
@@ -858,12 +1025,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                    enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
         if ruleset_title not in possible_ruleset_titles:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_ruleset_before with parameters: ruleset_title={ruleset_title}, name={name}, description={description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = possible_ruleset_titles.index(ruleset_title)
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_ruleset_before with parameters: ruleset_title={ruleset_title}, name={name}, description={description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -871,6 +1052,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_ruleset_before with parameters: ruleset_title={ruleset_title}, name={name}, description={description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -890,6 +1078,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_ruleset_before with parameters: ruleset_title={ruleset_title}, name={name}, description={description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -949,6 +1144,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('New ruleset inserted.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called insert_new_ruleset_before with parameters: ruleset_title={ruleset_title}, name={name}, description={description}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success')
 
     @insert_new_ruleset_before.error
     async def insert_new_ruleset_beforeError(
@@ -962,6 +1164,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_ruleset_before',
+                channel=interaction.channel,
+                event=None,
+                outcome='User did not have any of the required roles.')
 
     async def fields_autocomplete(
             self,
@@ -1009,6 +1218,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         if ruleset_and_field not in possible_ruleset_and_fields:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_field_before with parameters: ruleset_and_field={ruleset_and_field}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = 0
         field_index = 0
@@ -1022,6 +1238,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_field_before with parameters: ruleset_and_field={ruleset_and_field}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -1029,6 +1252,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_field_before with parameters: ruleset_and_field={ruleset_and_field}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -1043,6 +1273,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_field_before with parameters: ruleset_and_field={ruleset_and_field}, field_name={field_name}, field_value={field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -1101,6 +1338,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('New field inserted.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called insert_new_field_before with parameters: ruleset_and_field={ruleset_and_field}, field_name={field_name}, field_value={field_value}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success')
 
     @insert_new_field_before.error
     async def insert_new_field_beforeError(
@@ -1114,6 +1358,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called insert_new_field_before.',
+                channel=interaction.channel,
+                event=None,
+                outcome='MissingAnyRole')
 
     @app_commands.command(
         name='edit_ruleset_thumbnail',
@@ -1151,12 +1402,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                    enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
         if ruleset_title not in possible_ruleset_titles:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_thumbnail with parameters: ruleset_title={ruleset_title}, thumbnail_url={thumbnail_url}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title')
             return
         ruleset_index = possible_ruleset_titles.index(ruleset_title)
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_thumbnail with parameters: ruleset_title={ruleset_title}, thumbnail_url={thumbnail_url}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have rules')
             return
 
         try:
@@ -1164,6 +1429,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_thumbnail with parameters: ruleset_title={ruleset_title}, thumbnail_url={thumbnail_url}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found')
             self.server_has_rule = False
             return
 
@@ -1179,6 +1451,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_thumbnail with parameters: ruleset_title={ruleset_title}, thumbnail_url={thumbnail_url}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed')
             return
 
         try:
@@ -1186,6 +1465,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await message.edit(content=message.content, embeds=embeds)
         except discord.errors.HTTPException:
             await interaction.response.send_message('URL is invalid.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_thumbnail with parameters: ruleset_title={ruleset_title}, thumbnail_url={thumbnail_url}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='URL is invalid')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -1238,6 +1524,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Thumbnail updated.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called edit_ruleset_thumbnail with parameters: ruleset_title={ruleset_title}, thumbnail_url={thumbnail_url}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success')
 
     @edit_ruleset_thumbnail.error
     async def edit_ruleset_thumbnailError(
@@ -1251,6 +1544,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_thumbnail.',
+                channel=interaction.channel,
+                event=None,
+                outcome='User does not have any of the required roles.')
 
     @app_commands.command(
         name='edit_ruleset_title',
@@ -1287,12 +1587,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                    enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
         if ruleset_title not in possible_ruleset_titles:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_title with parameters: ruleset_title={ruleset_title}, new_title={new_title}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = possible_ruleset_titles.index(ruleset_title)
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_title with parameters: ruleset_title={ruleset_title}, new_title={new_title}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -1300,6 +1614,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_title with parameters: ruleset_title={ruleset_title}, new_title={new_title}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -1315,6 +1636,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_title with parameters: ruleset_title={ruleset_title}, new_title={new_title}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -1370,6 +1698,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Title updated.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called edit_ruleset_title with parameters: ruleset_title={ruleset_title}, new_title={new_title}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success')
 
     @edit_ruleset_title.error
     async def edit_ruleset_titleError(
@@ -1383,6 +1718,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_title.',
+                channel=interaction.channel,
+                event=None,
+                outcome='MissingAnyRole')
 
     @app_commands.command(
         name='edit_ruleset_description',
@@ -1419,12 +1761,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                    enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
         if ruleset_title not in possible_ruleset_titles:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_description with parameters: ruleset_title={ruleset_title}, new_description={new_description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title')
             return
         ruleset_index = possible_ruleset_titles.index(ruleset_title)
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_description with parameters: ruleset_title={ruleset_title}, new_description={new_description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have rules')
             return
 
         try:
@@ -1432,6 +1788,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_description with parameters: ruleset_title={ruleset_title}, new_description={new_description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found')
             self.server_has_rule = False
             return
 
@@ -1443,11 +1806,17 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")} at ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
         embed.timestamp = datetime.datetime.now()
 
-
         if embed_surpassed_limit(embeds):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_description with parameters: ruleset_title={ruleset_title}, new_description={new_description}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -1503,6 +1872,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Description updated.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called edit_ruleset_description with parameters: ruleset_title={ruleset_title}, new_description={new_description}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success')
 
     @edit_ruleset_description.error
     async def edit_ruleset_descriptionError(
@@ -1516,6 +1892,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_description.',
+                channel=interaction.channel,
+                event=None,
+                outcome='User did not have any of the required roles.')
 
     @app_commands.command(
         name='edit_ruleset_colour',
@@ -1563,12 +1946,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                    enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
         if ruleset_title not in possible_ruleset_titles:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_colour with parameters: ruleset_title={ruleset_title}, new_colour_1={new_colour_1}, new_colour_2={new_colour_2}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = possible_ruleset_titles.index(ruleset_title)
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_colour with parameters: ruleset_title={ruleset_title}, new_colour_1={new_colour_1}, new_colour_2={new_colour_2}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -1576,6 +1973,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_colour with parameters: ruleset_title={ruleset_title}, new_colour_1={new_colour_1}, new_colour_2={new_colour_2}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -1591,6 +1995,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_colour with parameters: ruleset_title={ruleset_title}, new_colour_1={new_colour_1}, new_colour_2={new_colour_2}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -1646,6 +2057,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Colour updated.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called edit_ruleset_colour with parameters: ruleset_title={ruleset_title}, new_colour_1={new_colour_1}, new_colour_2={new_colour_2}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Colour updated.')
 
     @edit_ruleset_colour.error
     async def edit_ruleset_colourError(
@@ -1659,6 +2077,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_ruleset_colour.',
+                channel=interaction.channel,
+                event=None,
+                outcome='User does not have any of the required roles.')
 
     @app_commands.command(
         name='edit_message_content',
@@ -1689,6 +2114,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content with parameters: new_content={new_content}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -1696,12 +2128,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content with parameters: new_content={new_content}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
         # Check if the new content is too long, if so, send a message saying that the new content is too long.
         if len(new_content) > 2000:
             await interaction.response.send_message('Message content is too long (max 2000 characters).', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content with parameters: new_content={new_content}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Message content is too long (max 2000 characters).')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -1756,6 +2202,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Server rules message content updated.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called edit_message_content with parameters: new_content={new_content}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Server rules message content updated.')
 
     @edit_message_content.error
     async def edit_message_contentError(
@@ -1769,6 +2222,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Missing required role.')
 
     @app_commands.command(
         name='edit_field',
@@ -1808,6 +2268,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         if ruleset_and_field not in possible_ruleset_and_fields:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_field with parameters: ruleset_and_field={ruleset_and_field}, new_field_name={new_field_name}, new_field_value={new_field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = 0
         field_index = 0
@@ -1821,6 +2288,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_field with parameters: ruleset_and_field={ruleset_and_field}, new_field_name={new_field_name}, new_field_value={new_field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -1828,6 +2302,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_field with parameters: ruleset_and_field={ruleset_and_field}, new_field_name={new_field_name}, new_field_value={new_field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -1842,6 +2323,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_field with parameters: ruleset_and_field={ruleset_and_field}, new_field_name={new_field_name}, new_field_value={new_field_value}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -1900,6 +2388,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Field edited.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called edit_field with parameters: ruleset_and_field={ruleset_and_field}, new_field_name={new_field_name}, new_field_value={new_field_value}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success')
 
     @edit_field.error
     async def edit_fieldError(
@@ -1913,6 +2408,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_field.',
+                channel=interaction.channel,
+                event=None,
+                outcome='User does not have any of the required roles.')
 
     @app_commands.command(
         name='remove_ruleset',
@@ -1945,12 +2447,26 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                    enumerate(self.server_rule_message_embeds_info_dict_list, 1)]
         if ruleset_title not in possible_ruleset_titles:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_ruleset with parameters: ruleset_title={ruleset_title}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = possible_ruleset_titles.index(ruleset_title)
         # Check if the server has rules, if not, send a message saying that the server does not have rules.
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_ruleset with parameters: ruleset_title={ruleset_title}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -1958,6 +2474,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_ruleset with parameters: ruleset_title={ruleset_title}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -2017,6 +2540,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Ruleset deleted.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called remove_ruleset with parameters: ruleset_title={ruleset_title}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Success.')
 
     @remove_ruleset.error
     async def remove_rulesetError(
@@ -2030,6 +2560,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_ruleset.',
+                channel=interaction.channel,
+                event=None,
+                outcome='MissingAnyRole.')
 
     @app_commands.command(
         name='remove_field',
@@ -2064,6 +2601,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
         if ruleset_and_field not in possible_ruleset_and_fields:
             await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field with parameters: ruleset_and_field={ruleset_and_field}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid ruleset title.')
             return
         ruleset_index = 0
         field_index = 0
@@ -2077,6 +2621,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field with parameters: ruleset_and_field={ruleset_and_field}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
             return
 
         try:
@@ -2084,6 +2635,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field with parameters: ruleset_and_field={ruleset_and_field}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -2099,6 +2657,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             await interaction.response.send_message(
                 'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.\n(In this case it\'s probably your username is too long in the footer)',
                 ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field with parameters: ruleset_and_field={ruleset_and_field}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
             return
 
         # Log previous rules message in the log channel, only if the server previously has rules
@@ -2154,6 +2719,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message('Field removed.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called remove_field with parameters: ruleset_and_field={ruleset_and_field}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Field removed.')
 
     @remove_field.error
     async def remove_fieldError(
@@ -2167,6 +2739,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.MissingAnyRole):
             await interaction.response.send_message('You need to be an administrator to use this command.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Missing required role.')
 
     @app_commands.command(
         name='display_rule',
@@ -2197,7 +2776,14 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                                        enumerate(embed_info_dict['fields'], 1)]
 
         if rule_name not in possible_ruleset_and_fields:
-            await interaction.response.send_message('Invalid ruleset title.', ephemeral=True)
+            await interaction.response.send_message('Invalid rule name.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called display_rule with parameters: rule_name={rule_name}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Invalid rule name.')
             return
         ruleset_index = 0
         field_index = 0
@@ -2211,6 +2797,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if not self.server_has_rule:
             await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called display_rule with parameters: rule_name={rule_name}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have rules.')
             return
 
         try:
@@ -2218,6 +2811,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             message = await channel.fetch_message(self.server_rule_message_id)
         except discord.errors.NotFound:
             await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called display_rule with parameters: rule_name={rule_name}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
             self.server_has_rule = False
             return
 
@@ -2236,6 +2836,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         url_view = discord.ui.View()
         url_view.add_item(discord.ui.Button(label='Go to Rules Message', style=discord.ButtonStyle.url, url=message.jump_url))
         await interaction.response.send_message(embed=display_embed, view=url_view, delete_after=300)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called display_rule with parameters: rule_name={rule_name}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Displayed rule.')
 
     @display_rule.error
     async def display_ruleError(
@@ -2249,6 +2856,13 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message('Command is on cooldown. Please try again later.',
                                                     ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called display_rule.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Command is on cooldown.')
 
 
 async def setup(bot: commands.Bot) -> None:
