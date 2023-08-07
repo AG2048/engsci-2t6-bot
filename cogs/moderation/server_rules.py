@@ -2894,6 +2894,184 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 outcome='Missing required role.')
 
     @app_commands.command(
+        name='remove_field_by_index',
+        description='Remove a field in the server rules message (index starts on 0).')
+    @app_commands.describe(
+        ruleset_index='The index of the ruleset to remove the field from (index starts on 0).',
+        field_index='The index of the field to remove (index starts on 0).')
+    @app_commands.guilds(SERVER_ID)
+    @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
+    async def remove_field_by_index(
+            self,
+            interaction: discord.Interaction,
+            ruleset_index: int,
+            field_index: int) -> None:
+        """
+        Remove the chosen field of a ruleset embed.
+        This command can be used only if the server already has rules.
+
+        Check if the server has rules, if not, send a message saying that the server does not have rules.
+        Check if server rules message still exists, if not, send a message saying that.
+        embed.remove_field(index of field)
+        Check if embeds are too long (due to username in footer), if so, send a message saying that.
+        Log previous embeds.
+        Load the ruleset embed to memory.
+        Edit the server rules message to replace the old ruleset embed with the new ruleset embed.
+        Write to csv file. Since this could be in the middle of the file, we need to write the whole ruleset again.
+        """
+        if ruleset_index >= len(self.server_rule_message_embeds_info_dict_list):
+            await interaction.response.send_message('Ruleset index out of range.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field_by_index with parameters: ruleset_index={ruleset_index}, field_index={field_index}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Ruleset index out of range.')
+            return
+
+        if field_index >= len(self.server_rule_message_embeds_info_dict_list[ruleset_index]['fields']):
+            await interaction.response.send_message('Field index out of range.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field_by_index with parameters: ruleset_index={ruleset_index}, field_index={field_index}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Field index out of range.')
+            return
+
+        # Check if the server has rules, if not, send a message saying that the server does not have rules.
+        if not self.server_has_rule:
+            await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
+                                                    ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field_by_index with parameters: ruleset_index={ruleset_index}, field_index={field_index}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
+            return
+
+        try:
+            channel = self.bot.get_channel(self.server_rule_channel_id)
+            message = await channel.fetch_message(self.server_rule_message_id)
+        except discord.errors.NotFound:
+            await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field_by_index with parameters: ruleset_index={ruleset_index}, field_index={field_index}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
+            self.server_has_rule = False
+            return
+
+        # Remove the field from the embed
+        embeds = message.embeds
+        embed = embeds[ruleset_index]
+        embed.remove_field(field_index)
+        embed.set_footer(
+            text=f'Last updated by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+        embed.timestamp = datetime.datetime.now()
+
+        if embed_surpassed_limit(embeds):
+            await interaction.response.send_message(
+                'Embed limit surpassed (too many embeds or too many characters)\nThe max number of embeds is 10 and the max number of characters is 6000.\n(In this case it\'s probably your username is too long in the footer)',
+                ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field_by_index with parameters: ruleset_index={ruleset_index}, field_index={field_index}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Embed limit surpassed (too many embeds or too many characters)')
+            return
+
+        # Log previous rules message in the log channel, only if the server previously has rules
+        previous_rules_embeds = []
+        for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+            embed = discord.Embed()
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+            embed.title = embed_info_dict['title']
+            embed.description = embed_info_dict['description']
+            embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
+            # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
+            embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict[
+                'colour'] else None
+            for field in embed_info_dict['fields']:
+                embed.add_field(name=field['name'], value=field['value'], inline=False)
+            embed.set_footer(
+                # This tells us who updated the rules and when
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            embed.timestamp = datetime.datetime.now()
+            previous_rules_embeds.append(embed)
+        log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
+        # Send log message, mention it is a rule change.
+        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
+                               embeds=previous_rules_embeds)
+
+        # Remove the field from the embed
+        editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
+        editing_embed['fields'].pop(field_index)
+
+        # Edit the server rules message with the new embed message.
+        await message.edit(content=message.content, embeds=embeds)
+
+        # Write to file any changes
+        # Any None values are converted to empty strings
+        with open(self.server_rules_csv_full_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=',')
+            writer.writerow(['value_name', 'value'])
+            writer.writerow(['channel_id', self.server_rule_channel_id])
+            writer.writerow(['message_id', self.server_rule_message_id])
+            writer.writerow(['message_content', self.server_rule_message_content])
+            for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                writer.writerow(['embed_title', embed_info_dict['title'] if embed_info_dict['title'] else ''])
+                writer.writerow(
+                    ['embed_description', embed_info_dict['description'] if embed_info_dict['description'] else ''])
+                writer.writerow(['embed_thumbnail_url',
+                                 embed_info_dict['thumbnail_url'] if embed_info_dict['thumbnail_url'] else ''])
+                writer.writerow(['embed_colour', embed_info_dict['colour'] if embed_info_dict['colour'] else ''])
+                for field in embed_info_dict['fields']:
+                    writer.writerow(['embed_field_name', field['name'] if field['name'] else ''])
+                    writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
+
+        # Send a message to the user saying that the field has been removed.
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('Field removed.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called remove_field_by_index with parameters: ruleset_index={ruleset_index}, field_index={field_index}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Field removed.')
+
+    @remove_field_by_index.error
+    async def remove_field_by_indexError(
+            self,
+            interaction: discord.Interaction,
+            error: app_commands.AppCommandError):
+        """
+        Error handler for remove_field command.
+        Currently only handles MissingAnyRole error, where the user does not have any of the required roles.
+        """
+        if isinstance(error, app_commands.MissingAnyRole):
+            await interaction.response.send_message('You need to be an administrator to use this command.',
+                                                    ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called remove_field.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Missing required role.')
+
+    @app_commands.command(
         name='display_rule',
         description='Display a rule from the server rules message for 2 minutes.')
     @app_commands.describe(
