@@ -51,7 +51,13 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
             for row in reader:
                 # This way of storing the data will overwrite older entries about the same user
                 self.users_ids_roles_ids[int(row[0])] = [int(role_id) for role_id in row[1].split(',')]
-        print('LeavingMemberRoleLoggingCog is ready.')
+        await self.bot.log(
+            cog=self,
+            user=None,
+            user_action=None,
+            channel=None,
+            event='LeavingMemberRoleLoggingCog is ready.',
+            outcome=None)
 
     @commands.Cog.listener()
     async def on_raw_member_remove(self, payload: discord.RawMemberRemoveEvent) -> None:
@@ -64,7 +70,13 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
         self.users_ids_roles_ids[user_id] = role_ids
         with open(self.left_users_roles_csv_full_path, 'a') as file:
             file.write(f'{user_id},"{",".join([str(role_id) for role_id in role_ids])}"\n')
-        await self.bot.log(self, f'User {payload.user.mention} left the server with roles: {[role.mention for role in payload.user.roles[1:]]}.')
+        await self.bot.log(
+            cog=self,
+            user=payload.user,
+            user_action="Left the server",
+            channel=None,
+            event=f'Has the following roles: {[role.mention for role in payload.user.roles[1:]]}',
+            outcome=None)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member) -> None:
@@ -76,7 +88,14 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
             for role_id in self.users_ids_roles_ids[member.id]:
                 role = guild.get_role(role_id)
                 await member.add_roles(role)
-            await self.bot.log(self, f'User {member.mention} rejoined the server and is given roles: {[guild.get_role(role_id).mention for role_id in self.users_ids_roles_ids[member.id]]}.')
+            await self.bot.log(
+                cog=self,
+                user=member,
+                user_action="Rejoined the server",
+                channel=None,
+                event=f'Given roles: {[guild.get_role(role_id).mention for role_id in self.users_ids_roles_ids[member.id]]}',
+                outcome=None
+            )
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -18,7 +18,13 @@ class TestingCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
-        print('Testing cog ready')
+        await self.bot.log(
+            cog=self,
+            user=None,
+            user_action=None,
+            channel=None,
+            event='TestingCog is ready.',
+            outcome=None)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message) -> None:
@@ -31,7 +37,7 @@ class TestingCog(commands.Cog):
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
         if payload.member == self.bot.user:
             return
-        print(payload.emoji.name)
+        # print(payload.emoji.name)
 
     @app_commands.command(
         name='app_command_name',
