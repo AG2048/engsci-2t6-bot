@@ -226,11 +226,11 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='set_rules_to_existing_message',
-        description='Set an existing message sent by the bot as the server rules message.')
+        description='Set existing message sent by bot as rules message')
     @app_commands.describe(
-        channel='The channel where the message is located.',
-        message_id='The message ID of the message to be set as the server rules message.',
-        set_action='Whether to use this message as the server rules or to overwrite this message with existing server rules stored in the bot.')
+        channel='The channel of the message',
+        message_id='The ID of message to set as rules message',
+        set_action='Use message as rules OR Overwrite message with stored rules')
     @app_commands.choices(
         set_action=[
             Choice(name="Use This Message's Contents As Rules", value="this_message"),
@@ -443,10 +443,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='create_new_rules_message',
-        description='Create a new message to be used as the server rules message.')
+        description='Create new rules message')
     @app_commands.describe(
-        channel='The channel where the message should be created.',
-        create_action='Whether to create a blank message or create a message with stored rules.')
+        channel='The channel for new message',
+        create_action='Create blank message OR Create message with stored rules')
     @app_commands.choices(
         create_action=[
             Choice(name="Create Blank Message", value="blank"),
@@ -595,7 +595,7 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='get_link',
-        description='Get the link to the server rules message.')
+        description='Get link to rules message')
     @app_commands.guilds(SERVER_ID)
     async def get_link(
             self,
@@ -642,10 +642,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='add_new_ruleset',
-        description='Add a new embed ruleset to the server rules message.')
+        description='Add new ruleset/embed to rules message')
     @app_commands.describe(
-        name='The name of the ruleset.',
-        description='(Optional) The description of the ruleset.')
+        name='Name of ruleset',
+        description='Description of ruleset')
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
     async def add_new_ruleset(
@@ -813,11 +813,11 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='add_new_field',
-        description='Add a new embed field with set name and value to a ruleset embed.')
+        description='Add new field to a ruleset/embed')
     @app_commands.describe(
-        ruleset_title='The name of the ruleset.',
-        field_name='(Optional) The name of the field.',
-        field_value='(Optional) The value of the field.')
+        ruleset_title='Name of ruleset',
+        field_name='Name of field',
+        field_value='Value of field')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -991,11 +991,11 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='insert_new_ruleset_before',
-        description='Insert a new ruleset before a specified ruleset.')
+        description='Insert new ruleset before a ruleset')
     @app_commands.describe(
-        ruleset_title='The name of the ruleset to insert before.',
-        name='The name of the ruleset to insert.',
-        description='(Optional) The description of the ruleset to insert.')
+        ruleset_title='Name of ruleset to insert before',
+        name='Name of new ruleset',
+        description='Description of new ruleset')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -1184,11 +1184,11 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='insert_new_field_before',
-        description='Insert a new field to an existing ruleset before a specific field.')
+        description='Insert new field to a ruleset before a field')
     @app_commands.describe(
-        ruleset_and_field='The ruleset and field to insert the new field before.',
-        field_name='(Optional) The name of the new field to insert.',
-        field_value='(Optional) The value of the new field to insert.')
+        ruleset_and_field='Name of field to insert before',
+        field_name='Name of new field',
+        field_value='Value of new field')
     @app_commands.autocomplete(ruleset_and_field=fields_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -1368,10 +1368,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='edit_ruleset_thumbnail',
-        description='Edit the thumbnail of a ruleset embed.')
+        description='Edit a ruleset/embed thumbnail')
     @app_commands.describe(
-        ruleset_title='The name of the ruleset.',
-        thumbnail_url='(Leave blank to remove thumbnail) The url of the thumbnail image.')
+        ruleset_title='Name of ruleset',
+        thumbnail_url='Thumbnail URL')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -1554,10 +1554,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='edit_ruleset_title',
-        description='Edit the title of a ruleset embed.')
+        description='Edit title of a ruleset/embed')
     @app_commands.describe(
-        ruleset_title='The name of the ruleset.',
-        new_title='The new title of the ruleset.')
+        ruleset_title='Name of ruleset',
+        new_title='New title')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -1728,10 +1728,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='edit_ruleset_description',
-        description='Edit the description of a ruleset embed.')
+        description='Edit description of a ruleset/embed')
     @app_commands.describe(
-        ruleset_title='The name of the ruleset.',
-        new_description='The new description of the ruleset.')
+        ruleset_title='Name of ruleset',
+        new_description='New description')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -1902,11 +1902,11 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='edit_ruleset_colour',
-        description='Edit the colour of a ruleset embed.')
+        description='Edit colour of a ruleset embed')
     @app_commands.describe(
-        ruleset_title='The name of the ruleset.',
-        new_colour_1='(Fill ONLY ONE VALUE) (1/2) Possible new colours of the ruleset.',
-        new_colour_2='(Fill ONLY ONE VALUE) (2/2) Possible new colours of the ruleset.')
+        ruleset_title='Name of ruleset',
+        new_colour_1='(1/2) Colour choices',
+        new_colour_2='(2/2) Colour choices')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.choices(
         new_colour_1=[Choice(name=colour, value=colour) for colour in list(colour_dict.keys())[:len(colour_dict.keys()) // 2]],
@@ -2087,9 +2087,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='edit_message_content',
-        description='Edit the message content of the server rules message.')
+        description='Edit rules message content of rules message')
     @app_commands.describe(
-        new_content='The new message content of the server rules message.')
+        new_content='New message content')
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
     async def edit_message_content(
@@ -2231,12 +2231,190 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                 outcome='Missing required role.')
 
     @app_commands.command(
-        name='edit_field',
-        description='Edit a field in the server rules message.')
+        name='edit_message_content_to_message',
+        description='Edit rules message content to an existing message\'s content')
     @app_commands.describe(
-        ruleset_and_field='The ruleset and field to edit.',
-        new_field_name='(Optional) The new name of the field.',
-        new_field_value='(Optional) The new value of the field.')
+        channel='Channel of existing message',
+        message_id='ID of existing message')
+    @app_commands.guilds(SERVER_ID)
+    @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
+    async def edit_message_content_to_message(
+            self,
+            interaction: discord.Interaction,
+            channel: discord.TextChannel,
+            message_id: str) -> None:
+        """
+        Edit the message content of the server rules message to the message content of another message.
+        This command can be used only if the server already has rules.
+        content cannot be None or "". Max 2000 characters.
+
+        Check if the message_id is a valid integer.
+        Check if the message exists in the channel.
+        Retrieve the message from which we extract content.
+        Check if the content is "" or > 2000 characters.
+        Check if the server has rules, if not, send a message saying that the server does not have rules.
+        Check if server rules message still exists, if not, send a message saying that.Log previous embeds and message content in the log channel.
+        Load the new content to memory.
+        Edit the server rules message with the new content, and same embeds.
+        Write to csv file. Since this could be in the middle of the file, we need to write the whole ruleset again.
+        """
+        # Check if message_id is a valid integer
+        try:
+            message_id = int(message_id)
+        except ValueError:
+            await interaction.response.send_message('Message ID is not a valid integer.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content_to_message with parameters: channel={channel}, message_id={message_id}',
+                channel=interaction.channel,
+                event=None,
+                outcome='Message ID is not a valid integer.')
+            return
+
+        # Check if message exists in the channel
+        try:
+            message_we_extract_content_from = await channel.fetch_message(message_id)
+        except discord.errors.NotFound:
+            await interaction.response.send_message('Message does not exist in the channel.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content_to_message with parameters: channel={channel}, message_id={message_id}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Message does not exist in the channel.')
+            return
+
+        # Get the content of the message
+        new_content = message_we_extract_content_from.content
+        if len(new_content) > 2000 or len(new_content) == 0:
+            await interaction.response.send_message('Message content is too long or empty.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content_to_message with parameters: channel={channel}, message_id={message_id}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Message content is too long or empty.')
+            return
+
+
+        # Check if the server has rules, if not, send a message saying that the server does not have rules.
+        if not self.server_has_rule:
+            await interaction.response.send_message('Server does not have a rules message linked to the bot yet.',
+                                                    ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content_to_message with parameters: channel={channel}, message_id={message_id}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server does not have a rules message linked to the bot yet.')
+            return
+
+        try:
+            channel = self.bot.get_channel(self.server_rule_channel_id)
+            message = await channel.fetch_message(self.server_rule_message_id)
+        except discord.errors.NotFound:
+            await interaction.response.send_message('Server rules message not found.', ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content_to_message with parameters: channel={channel}, message_id={message_id}.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Server rules message not found.')
+            self.server_has_rule = False
+            return
+
+        # Log previous rules message in the log channel, only if the server previously has rules
+        previous_rules_embeds = []
+        for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+            embed = discord.Embed()
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
+            embed.title = embed_info_dict['title']
+            embed.description = embed_info_dict['description']
+            embed.set_thumbnail(url=embed_info_dict['thumbnail_url'])
+            # Colour is a hex string, so we convert it to a discord.Colour object. If it is None, we set it to None.
+            embed.colour = discord.Colour.from_str(embed_info_dict['colour']) if embed_info_dict[
+                'colour'] else None
+            for field in embed_info_dict['fields']:
+                embed.add_field(name=field['name'], value=field['value'], inline=False)
+            embed.set_footer(
+                # This tells us who updated the rules and when
+                text=f'Before update by {interaction.user.name + (("#" + interaction.user.discriminator) if len(interaction.user.discriminator) > 1 else "")}: ({datetime.datetime.now().astimezone().tzinfo.tzname(datetime.datetime.now().astimezone())})')
+            embed.timestamp = datetime.datetime.now()
+            previous_rules_embeds.append(embed)
+        log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
+        # Send log message, mention it is a rule change.
+        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
+                               embeds=previous_rules_embeds)
+
+        # Load new embed_field to memory.
+        self.server_rule_message_content = new_content
+
+        # Edit the server rules message with the new embed message.
+        await message.edit(content=new_content, embeds=message.embeds)
+
+        # Write to file any changes
+        # Any None values are converted to empty strings
+        with open(self.server_rules_csv_full_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter=',')
+            writer.writerow(['value_name', 'value'])
+            writer.writerow(['channel_id', self.server_rule_channel_id])
+            writer.writerow(['message_id', self.server_rule_message_id])
+            writer.writerow(['message_content', self.server_rule_message_content])
+            for embed_info_dict in self.server_rule_message_embeds_info_dict_list:
+                writer.writerow(['embed_title', embed_info_dict['title'] if embed_info_dict['title'] else ''])
+                writer.writerow(
+                    ['embed_description', embed_info_dict['description'] if embed_info_dict['description'] else ''])
+                writer.writerow(['embed_thumbnail_url',
+                                 embed_info_dict['thumbnail_url'] if embed_info_dict['thumbnail_url'] else ''])
+                writer.writerow(['embed_colour', embed_info_dict['colour'] if embed_info_dict['colour'] else ''])
+                for field in embed_info_dict['fields']:
+                    writer.writerow(['embed_field_name', field['name'] if field['name'] else ''])
+                    writer.writerow(['embed_field_value', field['value'] if field['value'] else ''])
+
+        # Send a message to the user saying that the message content have been updated.
+        url_view = discord.ui.View()
+        url_view.add_item(discord.ui.Button(label='Go to Message', style=discord.ButtonStyle.url, url=message.jump_url))
+        await interaction.response.send_message('Server rules message content updated.', ephemeral=True, view=url_view)
+        await self.bot.log(
+            cog=self,
+            user=interaction.user,
+            user_action=f'Called edit_message_content_to_message with parameters: channel={channel}, message_id={message_id}.',
+            channel=interaction.channel,
+            event=None,
+            outcome='Server rules message content updated.')
+
+    @edit_message_content_to_message.error
+    async def edit_message_content_to_messageError(
+            self,
+            interaction: discord.Interaction,
+            error: app_commands.AppCommandError):
+        """
+        Error handler for edit_message_content command.
+        Currently only handles MissingAnyRole error, where the user does not have any of the required roles.
+        """
+        if isinstance(error, app_commands.MissingAnyRole):
+            await interaction.response.send_message('You need to be an administrator to use this command.',
+                                                    ephemeral=True)
+            await self.bot.log(
+                cog=self,
+                user=interaction.user,
+                user_action=f'Called edit_message_content.',
+                channel=interaction.channel,
+                event=None,
+                outcome='Missing required role.')
+
+    @app_commands.command(
+        name='edit_field',
+        description='Edit field in rules')
+    @app_commands.describe(
+        ruleset_and_field='Name of field to edit',
+        new_field_name='New name',
+        new_field_value='New value')
     @app_commands.autocomplete(ruleset_and_field=fields_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -2418,9 +2596,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='remove_ruleset',
-        description='Remove a ruleset embed.')
+        description='Remove a ruleset/embed')
     @app_commands.describe(
-        ruleset_title='The name of the ruleset to remove.')
+        ruleset_title='Name of ruleset')
     @app_commands.autocomplete(ruleset_title=ruleset_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -2570,9 +2748,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='remove_ruleset_by_index',
-        description='Remove a ruleset embed (index starts on 0).')
+        description='Remove a ruleset embed (index starts on 0)')
     @app_commands.describe(
-        ruleset_index='The index of the ruleset to remove (starts on 0).')
+        ruleset_index='Index (starts on 0)')
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
     async def remove_ruleset_by_index(
@@ -2716,9 +2894,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='remove_field',
-        description='Remove a field in the server rules message.')
+        description='Remove a field')
     @app_commands.describe(
-        ruleset_and_field='The field to remove under the ruleset.')
+        ruleset_and_field='Name of field')
     @app_commands.autocomplete(ruleset_and_field=fields_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
@@ -2895,10 +3073,10 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='remove_field_by_index',
-        description='Remove a field in the server rules message (index starts on 0).')
+        description='Remove a field (index starts on 0)')
     @app_commands.describe(
-        ruleset_index='The index of the ruleset to remove the field from (index starts on 0).',
-        field_index='The index of the field to remove (index starts on 0).')
+        ruleset_index='Ruleset/embed index (index starts on 0)',
+        field_index='Field index (index starts on 0)')
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.has_any_role(*ADMINISTRATION_ROLES_IDS)
     async def remove_field_by_index(
@@ -3073,9 +3251,9 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
 
     @app_commands.command(
         name='display_rule',
-        description='Display a rule from the server rules message for 2 minutes.')
+        description='Display a rule for 2 minutes')
     @app_commands.describe(
-        rule_name='The ruleset and title of the rule to display.')
+        rule_name='The ruleset and title of the rule to display')
     @app_commands.autocomplete(rule_name=fields_autocomplete)
     @app_commands.guilds(SERVER_ID)
     @app_commands.checks.cooldown(1, 10.0)

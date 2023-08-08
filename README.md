@@ -95,7 +95,17 @@ Specific commands are as follows:
 - `display_rule`
   - Displays a specified rule (field in a ruleset/embed) in the server rules message.
   - This message disappears after 5 minutes.
-
+- `remove_ruleset_by_index`
+  - Removes a specified ruleset (embed) by its index.
+  - This is to be used when the other functions cannot retrieve the ruleset (embed) by its name.
+  - Only the remove function has the by-index version, because if we can't retrieve the ruleset (embed) by its name, then there's probably something wrong with the ruleset's name (perhaps it's too long)
+- `remove_field_by_index`
+  - Removes a specified field in a specified ruleset (embed) by its index.
+  - This is to be used when the other functions cannot retrieve the field by its name.
+  - Only the remove function has the by-index version, because if we can't retrieve the field by its name, then there's probably something wrong with the field's name (perhaps it's too long)
+- `edit_message_content_to_message`
+  - Retrieves the content of a specified message and sets the server rules message's content to that message's content.
+  - This is to be used when the message content needs to contain multiple lines, which is not possible with the current command inputs.
 Only `get_link` and `display_rule` are available to everyone. All other commands are only available to admins.
 
 Few notable things:
