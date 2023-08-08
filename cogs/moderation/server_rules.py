@@ -328,7 +328,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     previous_rules_embeds.append(embed)
                 log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
                 # Send log message, mention it is a rule change.
-                await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}', embeds=previous_rules_embeds)
+                await log_channel.send(content=f'**Server Rule Changed:**')
+                await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
             # Checks passed, set server has rule to True (After we log the previous rules)
             self.server_has_rule = True
@@ -497,8 +498,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
                     previous_rules_embeds.append(embed)
                 log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
                 # Send log message, mention it is a rule change.
-                await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                                       embeds=previous_rules_embeds)
+                await log_channel.send(content=f'**Server Rule Changed:**')
+                await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
             self.server_has_rule = True
             message = await channel.send('New server rules message.')
@@ -736,8 +737,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed to memory.
         self.server_rule_message_embeds_info_dict_list.append({
@@ -925,8 +926,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed_field to memory.
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -1106,8 +1107,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Insert new embed to memory.
         self.server_rule_message_embeds_info_dict_list.insert(ruleset_index, {
@@ -1302,8 +1303,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Insert new embed_field to memory.
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -1494,8 +1495,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed_field to memory.
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -1665,8 +1666,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed_field to memory.
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -1839,8 +1840,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed_field to memory.
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -2024,8 +2025,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed_field to memory.
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -2170,8 +2171,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed_field to memory.
         self.server_rule_message_content = new_content
@@ -2348,8 +2349,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Load new embed_field to memory.
         self.server_rule_message_content = new_content
@@ -2530,8 +2531,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Insert new embed_field to memory.
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -2686,8 +2687,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Remove the ruleset embed from the self.server_rule_message_embeds_info_dict_list
         self.server_rule_message_embeds_info_dict_list.pop(ruleset_index)
@@ -2832,8 +2833,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Remove the ruleset embed from the self.server_rule_message_embeds_info_dict_list
         self.server_rule_message_embeds_info_dict_list.pop(ruleset_index)
@@ -3010,8 +3011,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Remove the field from the embed
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
@@ -3188,8 +3189,8 @@ class ServerRulesCog(commands.GroupCog, name='rules'):
             previous_rules_embeds.append(embed)
         log_channel = self.bot.get_channel(LOG_CHANNEL_ID)
         # Send log message, mention it is a rule change.
-        await log_channel.send(content=f'**Server Rule Changed:**\n{self.server_rule_message_content}',
-                               embeds=previous_rules_embeds)
+        await log_channel.send(content=f'**Server Rule Changed:**')
+        await log_channel.send(content=self.server_rule_message_content, embeds=previous_rules_embeds)
 
         # Remove the field from the embed
         editing_embed = self.server_rule_message_embeds_info_dict_list[ruleset_index]
