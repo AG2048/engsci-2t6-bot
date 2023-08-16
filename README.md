@@ -28,6 +28,8 @@ And it can go through each of the information and process them according to thei
 
 In the end, it sends an embed message to the log channel indicating the cog that the log is from, the user that triggered the log, the user action that triggered the log, the channel that the log is from, the event that triggered the log, and the outcome of the event. At the same time, a similar message is being displayed to the console through `print()`.
 
+We also added error handling for logging. If error occurs, it will try to log whatever it can.
+
 ## Moderation:
 Any functionality that is related to moderation of the server.
 ### Server Rules:
@@ -130,6 +132,34 @@ One thing to keep in mind is to not store the `@everyone` role in the csv file. 
 
 We also just keep appending to the csv file, and when we read the csv file, just let the later entries of the same user override the earlier ones.
 
+### Auto Banning:
+`cogs/moderation/auto_banning.py`
+
+This cog is responsible for automatically banning users who send highly suspicious messages. The bot "bans" people by giving them a specific "banned" role that forbids them from seeing and sending messages in all channels, other than the "appeal" channel.
+
+The type of messages considered suspicious are:
+- Multiple identical messages sent to the same channel within a short period of time.
+- Multiple identical messages sent to many different channels within a short period of time.
+- Messages that contain links or attachments sent immediately after joining the server.
+
+For a message to even be considered suspicious, it must be over a certain number of characters long, or contain links, or contain attachments.
+
+If a message contains link, the message will be "compared" by the link, and not its content.
+
+It also checks when the user's "banned" role is removed, and will log this event. 
+
+Environment variables used: 
+- AUTO_BAN_NUMBER_OF_REPEAT_IN_SAME_CHANNEL
+  - The number of identical messages sent to the same channel within a short period of time to be considered suspicious.
+- AUTO_BAN_NUMBER_OF_DIFFERENT_CHANNEL_REPEAT
+  - The number of channels identical messages are sent within a short period of time to be considered suspicious.
+- AUTO_BAN_CHARACTER_LENGTH_MINIMUM
+  - The minimum number of characters a message must have to be considered suspicious.
+- AUTO_BAN_DETECTION_PERIOD_MINUTES
+  - The period of time in minutes to check for suspicious messages.
+- AUTO_BAN_NEW_USER_THRESHOLD_SECONDS
+  - The number of seconds after joining the server for a message to be considered suspicious.
+
 # Contributing
 The `main.py` file, which defines the main bot, is the only file that will be running on the server.
 
@@ -204,7 +234,22 @@ The content of this file should be as follows:
   - The IDs of the roles that have administrative privileges. This can be found by right-clicking on the role and selecting "Copy Role ID". 
 - COMMAND_PREFIX=<COMMAND_PREFIX>
   - The prefix that the bot will use to identify commands. This can be any string of characters.
-
+- LOG_CHANNEL_ID
+  - The ID of the channel that the bot will log activities to. This can be found by right-clicking on the channel and selecting "Copy ID".
+- BANNED_ROLE_ID
+  - The ID of the role that the bot will assign to banned users. It is assumed that members with this role can no longer send messages. This can be found by right-clicking on the role and selecting "Copy Role ID".
+- REASON_OF_BAN_CHANNEL_ID
+  - The ID of the channel that the bot will send the reason of the ban to. This can be found by right-clicking on the channel and selecting "Copy ID".
+- AUTO_BAN_NUMBER_OF_REPEAT_IN_SAME_CHANNEL
+  - The number of identical messages sent to the same channel within a short period of time to be considered suspicious.
+- AUTO_BAN_NUMBER_OF_DIFFERENT_CHANNEL_REPEAT
+  - The number of channels identical messages are sent within a short period of time to be considered suspicious.
+- AUTO_BAN_CHARACTER_LENGTH_MINIMUM
+  - The minimum number of characters a message must have to be considered suspicious.
+- AUTO_BAN_DETECTION_PERIOD_MINUTES
+  - The period of time in minutes to check for suspicious messages.
+- AUTO_BAN_NEW_USER_THRESHOLD_SECONDS
+  - The number of seconds after joining the server for a message to be considered suspicious.
 
 # Functionalities
 We plan to incorporate the following features into our Discord bot. Additional functionalities may be added as we see fit (or as you suggest!).
