@@ -2,12 +2,21 @@
 This repository houses the development of an upcoming Discord bot for the UofT EngSci 2T6 server.
 
 # Table of Contents
-- [Contributing](#contributing)
-- [Project Structure](#project-structure)
-- [Functionalities](#functionalities)
-  - [Utility Functions](#utility-functions)
-  - ["Fun" Functions](#fun-functions)
-- [Cogs](#cogs)
+1. [Completed Functionalities](#completed-functionalities)
+   - [Main Bot](#main-bot)
+     - [Logging](#logging)
+   - [Moderation](#moderation)
+     - [Server Rules](#server-rules)
+     - [Leaving Member Role Logging and Re-Giving](#leaving-member-role-logging-and-re-giving)
+     - [Auto Banning](#auto-banning)
+2. [Contributing](#contributing)
+3. [Project Structure](#project-structure)
+4. [Environment Variables](#environment-variables)
+5. [Functionalities](#functionalities)
+   - [Utility Functions](#utility-functions)
+   - ["Fun" Functions](#fun-functions)
+6. [Cogs](#cogs)
+7. [Hosting](#hosting)
 
 # Completed Functionalities
 ## Main Bot
