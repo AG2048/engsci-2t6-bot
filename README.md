@@ -250,6 +250,8 @@ The content of this file should be as follows:
   - The period of time in minutes to check for suspicious messages.
 - AUTO_BAN_NEW_USER_THRESHOLD_SECONDS
   - The number of seconds after joining the server for a message to be considered suspicious.
+- DO_NOT_RE_GIVE_ROLES_IDS
+  - The IDs of the roles that the bot will not re-give to users when they rejoin the server. This can be found by right-clicking on the role and selecting "Copy Role ID".
 
 # Functionalities
 We plan to incorporate the following features into our Discord bot. Additional functionalities may be added as we see fit (or as you suggest!).

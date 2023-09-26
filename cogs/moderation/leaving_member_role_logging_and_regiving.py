@@ -7,7 +7,8 @@ import csv
 
 load_dotenv()
 SERVER_ID = int(os.getenv('SERVER_ID'))
-
+ADMINISTRATION_ROLES_IDS = [int(role_id) for role_id in os.getenv('ADMINISTRATION_ROLES_IDS').split(',')]
+DO_NOT_RE_GIVE_ROLES_IDS = [int(role_id) for role_id in os.getenv('DO_NOT_RE_GIVE_ROLES_IDS').split(',')]
 
 class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -86,6 +87,9 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
         if member.id in self.users_ids_roles_ids:
             guild = member.guild
             for role_id in self.users_ids_roles_ids[member.id]:
+                # Don't give back certain roles
+                if role_id in DO_NOT_RE_GIVE_ROLES_IDS or role_id in ADMINISTRATION_ROLES_IDS:
+                    continue
                 role = guild.get_role(role_id)
                 await member.add_roles(role)
             await self.bot.log(
