@@ -90,8 +90,19 @@ class LeavingMemberRoleLoggingAndRegivingCog(commands.Cog):
                 # Don't give back certain roles
                 if role_id in DO_NOT_RE_GIVE_ROLES_IDS or role_id in ADMINISTRATION_ROLES_IDS:
                     continue
-                role = guild.get_role(role_id)
-                await member.add_roles(role)
+                try:
+                    role = guild.get_role(role_id)
+                    await member.add_roles(role)
+                except Exception as e:
+                    await self.bot.log(
+                        cog=self,
+                        user=member,
+                        user_action="Rejoined the server",
+                        channel=None,
+                        event=f'Failed to give role: {role_id}',
+                        outcome=None
+                    )
+
             await self.bot.log(
                 cog=self,
                 user=member,

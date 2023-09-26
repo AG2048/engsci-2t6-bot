@@ -139,6 +139,8 @@ user_id,role_ids
 ```
 One thing to keep in mind is to not store the `@everyone` role in the csv file. This is because the bot will attempt to give back the `@everyone` role to the user when they rejoin the server, which is impossible and cause the bot to raise an error.
 
+If the act of giving a specific role raises an exception, log the exception and continue giving the other roles.
+
 We also just keep appending to the csv file, and when we read the csv file, just let the later entries of the same user override the earlier ones.
 
 ### Auto Banning:
