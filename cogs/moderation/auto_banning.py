@@ -103,6 +103,7 @@ class AutoBanningCog(commands.Cog):
             # No need to check if the message is not a repeating message
             return
 
+        # Perform the check for new member sending attachment / link
         if message.attachments or 'http' in message.content:
             # if member joined less than 1 minute ago, ban them
             if (discord.utils.utcnow() - message.author.joined_at).total_seconds() < new_user_ban_threshold_seconds:
@@ -137,6 +138,14 @@ class AutoBanningCog(commands.Cog):
                     outcome='deleted the message')
                 return
 
+        # Due to a recent accidental ban (someone sent different images, but got flagged as "spam" because there are
+        #   no content in the image message, so the system thought they were "same" message)
+        # Also, we don't need to ban people for sending a lot of attachments since this is a slow way of spamming.
+        # This block is placed after the new user check so that new users can still be banned for sending attachments
+        if message.attachments and not message.content:
+            # don't care about attachments with NO text
+            return
+
         # load the message
         if author_id in self.user_messages_dict:
             self.user_messages_dict[author_id].append(message)
@@ -163,16 +172,17 @@ class AutoBanningCog(commands.Cog):
                                 message_channel_repeats_dict[chunk] = {message_in_list.channel.id}
                             if message_in_list.channel == channel:
                                 counts_dict[chunk] = counts_dict.get(chunk, 0) + 1
+                # Recent change: record the message itself even if there's link. Since we might want the full context
+                if message_in_list.content in message_channel_repeats_dict:
+                    message_channel_repeats_dict[message_in_list.content].add(message_in_list.channel.id)
                 else:
-                    if message_in_list.content in message_channel_repeats_dict:
-                        message_channel_repeats_dict[message_in_list.content].add(message_in_list.channel.id)
-                    else:
-                        message_channel_repeats_dict[message_in_list.content] = {message_in_list.channel.id}
-                    if message_in_list.channel == channel:
-                        counts_dict[message_in_list.content] = counts_dict.get(message_in_list.content, 0) + 1
+                    message_channel_repeats_dict[message_in_list.content] = {message_in_list.channel.id}
+                if message_in_list.channel == channel:
+                    counts_dict[message_in_list.content] = counts_dict.get(message_in_list.content, 0) + 1
 
-            # check if condition is met
-            for message_content, message_count in counts_dict.items():
+            # check if condition is met. Do this sorted thing to make sure the longest message is deleted first
+            for message_content in sorted(counts_dict, key=lambda x: len(x), reverse=True):
+                message_count = counts_dict[message_content]
                 if message_count >= repeat_message_in_same_channel_threshold:
                     self.banned_users_id_list.append(author_id)
                     # timestamp of 1 day later - stop deleting user's messages after 1 day
@@ -206,6 +216,8 @@ class AutoBanningCog(commands.Cog):
                                             except discord.errors.NotFound:
                                                 pass
                             else:
+                                # For this, it's not necessary to make additional checks. since full message is subset
+                                # of message with this link
                                 if message_in_list.content == message_content:
                                     try:
                                         await message_in_list.delete()
@@ -224,7 +236,9 @@ class AutoBanningCog(commands.Cog):
                     return
 
         # now check if user has sent repeating messages in 3 or more channels in the last time_threshold_minutes minutes
-        for message_content, channel_ids in message_channel_repeats_dict.items():
+        # Also sort by length of message to make sure the longest message is deleted first
+        for message_content in sorted(message_channel_repeats_dict, key=lambda x: len(x), reverse=True):
+            channel_ids = message_channel_repeats_dict[message_content]
             if len(channel_ids) >= repeat_message_in_different_channel_threshold:
                 self.banned_users_id_list.append(author_id)
                 # timestamp of 1 day later - stop deleting user's messages after 1 day

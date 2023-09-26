@@ -151,11 +151,15 @@ The type of messages considered suspicious are:
 - Multiple identical messages sent to many different channels within a short period of time.
 - Messages that contain links or attachments sent immediately after joining the server.
 
-For a message to even be considered suspicious, it must be over a certain number of characters long, or contain links, or contain attachments.
+For a message to even be considered suspicious, it must be over a certain number of characters long, or contain links.
 
-If a message contains link, the message will be "compared" by the link, and not its content.
+If a message contains link, the message will be "compared" by the link, as well as the full content.
+
+If multiple messages fulfills the ban criteria, the bot will prioritize the longer message to ban and log.
 
 It also checks when the user's "banned" role is removed, and will log this event. 
+
+Edits: No longer checking attachments for users after they have joined for a long time (since sending attachments is a very slow and inefficient way of spamming, but it's possible for regular users to send many attachments).
 
 Environment variables used: 
 - AUTO_BAN_NUMBER_OF_REPEAT_IN_SAME_CHANNEL
